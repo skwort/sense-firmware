@@ -36,6 +36,8 @@ void sht4x_poll_work_handler(struct k_work *work)
     struct sensor_reading sr = {0};
     int err = 0;
 
+    sr.type = SENSOR_PKT_SHT;
+
     if (!device_is_ready(sht)) {
 		LOG_ERR("Device %s is not ready.", sht->name);
         goto fail;
@@ -53,7 +55,6 @@ void sht4x_poll_work_handler(struct k_work *work)
     sr.temp = sensor_value_to_double(&temp),
     sr.hum = sensor_value_to_double(&hum);
 
-    sr.type = SHT4X_SENSOR_PACKET;
     k_msgq_put(&sensor_msgq, &sr, K_NO_WAIT);
     return;
 
@@ -103,12 +104,13 @@ int imu_set_sampling_frequency(double freq)
     return 0;
 }
 
-
 void imu_poll_work_handler(struct k_work *work)
 {
     struct sensor_value x, y, z;
     struct sensor_reading sr = {0};
     int err = 0;
+
+    sr.type = SENSOR_PKT_IMU;
 
     err = sensor_sample_fetch_chan(lsm, SENSOR_CHAN_ACCEL_XYZ);
     if (err != 0) {
@@ -138,7 +140,6 @@ void imu_poll_work_handler(struct k_work *work)
     sr.gyro_y = sensor_value_to_double(&y);
     sr.gyro_z = sensor_value_to_double(&z);
 
-    sr.type = IMU_SENSOR_PACKET;
     k_msgq_put(&sensor_msgq, &sr, K_NO_WAIT);
     return;
 

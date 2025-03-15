@@ -27,13 +27,13 @@ int main(void)
                 printf("Error getitng sensor values\n");
 
 #ifdef CONFIG_APP_USE_SHT40
-            else if (sr.type == SHT4X_SENSOR_PACKET)
+            else if (sr.type == SENSOR_PKT_SHT)
                 printf("SHT40: Temp: %.2f C  RH: %0.2f %%\n",
                        sr.temp, sr.hum);
 #endif
 
 #ifdef CONFIG_APP_USE_IMU
-            else if (sr.type == IMU_SENSOR_PACKET)
+            else if (sr.type ==  SENSOR_PKT_IMU)
                 printf("IMU: Accel: x = %.2f  y = %.2f  z = %.2f\n"
                        "      Gyro: x = %.2f  y = %.2f  z = %.2f\n",
                        sr.accel_x, sr.accel_y, sr.accel_z,

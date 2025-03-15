@@ -5,10 +5,10 @@
 
 enum sensor_reading_type {
 #ifdef CONFIG_APP_USE_SHT40
-    SHT4X_SENSOR_PACKET,
+    SENSOR_PKT_SHT,
 #endif
 #ifdef CONFIG_APP_USE_IMU
-    IMU_SENSOR_PACKET,
+    SENSOR_PKT_IMU,
 #endif
 };
 
