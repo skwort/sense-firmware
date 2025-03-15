@@ -1,0 +1,9 @@
+&i2c2 {
+    // SHT40
+    sht4x@44 {
+		status = "okay";
+		compatible = "sensirion,sht4x";
+		reg = <0x44>;
+		repeatability = <2>;
+	};
+};

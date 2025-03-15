@@ -9,3 +9,14 @@
 menu "Zephyr"
 source "Kconfig.zephyr"
 endmenu
+
+menu "SENSE IoT Control Core"
+config APP_USE_SHT40
+	bool "Enable the SHT40"
+	default y
+
+module = APP
+module-str = APP
+source "subsys/logging/Kconfig.template.log_config"
+
+endmenu

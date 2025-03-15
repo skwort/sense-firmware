@@ -69,7 +69,21 @@ specified commands, appending ``debug.conf``
 west build ... -- -DEXTRA_CONF_FILE=debug.conf
 ```
 
-Once you have built the applications, you can flash them as follows: 
+Each target has twister setup. This means the above can also be achieved by
+running:
+
+```shell
+west build ... -T app.debug
+```
+
+The configuration menu can be accessed for each application by appending the
+menuconfig target:
+
+```shell
+west build ... -t menuconfig
+```
+
+Once you have built the applications, you can flash them as follows:
 
 ```shell
 west flash -d cores/control/build
