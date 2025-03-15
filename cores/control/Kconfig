@@ -15,6 +15,10 @@ config APP_USE_SHT40
 	bool "Enable the SHT40"
 	default y
 
+config APP_USE_IMU
+	bool "Enable the LSM6DSO/LIS3MDL IMU"
+	default y
+
 module = APP
 module-str = APP
 source "subsys/logging/Kconfig.template.log_config"
