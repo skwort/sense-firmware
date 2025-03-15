@@ -1,0 +1,47 @@
+name: Build and test app in NCS docker container
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  build-and-test-in-docker:
+    runs-on: ubuntu-22.04
+    container: ghcr.io/nrfconnect/sdk-nrf-toolchain:v2.9.1
+    defaults:
+      run:
+        # Bash shell is needed to set toolchain related environment variables in docker container
+        # It is a workaround for GitHub Actions limitation https://github.com/actions/runner/issues/1964
+        shell: bash
+    steps:
+      - name: Checkout repository with sense-firmware applications
+        uses: actions/checkout@v4
+        with:
+          path: sense-firmware 
+
+      - name: Prepare west project
+        run: |
+          west init -l sense-firmware 
+          west update -o=--depth=1 -n
+
+      - name: Build control core firmware
+        working-directory: sense-firmware 
+        run: |
+          west twister -T cores/control -O twister-out-control -v --inline-logs --integration
+
+      - name: Build interface core firmware
+        working-directory: sense-firmware 
+        run: |
+          west twister -T cores/interface -O twister-out-interface -v --inline-logs --integration
+
+      - name: Store hex files
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-applications
+          path: sense-firmware/twister-out*/**/zephyr/zephyr.hex
+
+      # Uncomment step below when twister tests are added
+      # - name: Twister Tests
+      #   working-directory: sense-firmware 
+      #   run: |
+      #     west twister -T tests -v --inline-logs --integration
