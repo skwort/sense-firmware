@@ -1,0 +1,13 @@
+If:
+  PathMatch: ^cores/control/.*
+
+CompileFlags:
+  CompilationDatabase: ./cores/control/build/control
+
+---
+
+If:
+  PathMatch: ^cores/interface/.*
+
+CompileFlags:
+  CompilationDatabase: ./cores/interface/build/interface
