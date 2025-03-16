@@ -1,6 +1,7 @@
 config HEARTBEAT
 	bool "Enable the heartbeat"
 	default y
+	select GPIO
 	help
 	  This option enables the 'heartbeat' library
 
@@ -11,3 +12,7 @@ config HEARTBEAT_DEFAULT_DURATION
 	help
 	  This specifies the default duration in milliseconds of the heartbeat
 	  timer used during system initialisation
+
+module = HEARTBEAT
+module-str = HEARTBEAT
+source "subsys/logging/Kconfig.template.log_config"

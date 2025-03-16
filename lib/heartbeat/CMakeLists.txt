@@ -1,2 +1,2 @@
-zephyr_library()
-zephyr_library_sources(heartbeat.c)
+FILE(GLOB heartbeat_sources *.c)
+target_sources(app PRIVATE ${heartbeat_sources})
