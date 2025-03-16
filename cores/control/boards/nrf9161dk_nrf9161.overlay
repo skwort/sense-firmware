@@ -1,3 +1,10 @@
+/ {
+	aliases {
+		heartbeat-gpio = &led0;
+	};
+
+};
+
 &i2c2 {
     // SHT40
 	sht4x@44 {

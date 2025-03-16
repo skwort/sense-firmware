@@ -9,12 +9,16 @@
 #include <lib/heartbeat.h>
 #include "sensors.h"
 
-
 LOG_MODULE_REGISTER(main, CONFIG_APP_LOG_LEVEL);
 
 int main(void)
 {
 	printk("SENSE Control Core version %s\n", APP_VERSION_STRING);
+
+#ifdef CONFIG_HEARTBEAT
+    if (heartbeat_init_start(K_MSEC(CONFIG_HEARTBEAT_DEFAULT_DURATION)))
+        LOG_ERR("Failed to initialise heartbeat.");
+#endif
 
 #ifdef CONFIG_APP_USE_IMU
     imu_init();
