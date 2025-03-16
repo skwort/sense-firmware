@@ -91,14 +91,10 @@ west flash -d cores/interface/build
 ```
 
 ### Testing
-
-To execute Twister integration tests, run the following command:
-
-```shell
-west twister -T tests --integration
-```
-
-Note that no tests are currently implemented.
+The testing procedures are the discussed in the README file for each core. In
+general, the entire test suite should be run before commiting to avoid
+regressions. Pre-commit hooks will be setup at a later date to automate this
+process.
 
 ### Documentation
 
