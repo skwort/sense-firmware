@@ -6,7 +6,9 @@
 #include <app_version.h>
 #include <zephyr/drivers/sensor/sht4x.h>
 
+#include <lib/heartbeat.h>
 #include "sensors.h"
+
 
 LOG_MODULE_REGISTER(main, CONFIG_APP_LOG_LEVEL);
 

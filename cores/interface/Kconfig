@@ -9,3 +9,5 @@
 menu "Zephyr"
 source "Kconfig.zephyr"
 endmenu
+
+rsource "../../lib/Kconfig"

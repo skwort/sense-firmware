@@ -11,6 +11,8 @@ source "Kconfig.zephyr"
 endmenu
 
 menu "SENSE IoT Control Core"
+
+menu "Onboard Sensors"
 config APP_USE_SHT40
 	bool "Enable the SHT40"
 	default y
@@ -18,9 +20,12 @@ config APP_USE_SHT40
 config APP_USE_IMU
 	bool "Enable the LSM6DSO/LIS3MDL IMU"
 	default y
+endmenu
 
 module = APP
 module-str = APP
 source "subsys/logging/Kconfig.template.log_config"
+
+rsource "../../lib/Kconfig"
 
 endmenu

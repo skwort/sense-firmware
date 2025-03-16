@@ -11,3 +11,11 @@ If:
 
 CompileFlags:
   CompilationDatabase: ./cores/interface/build/interface
+
+---
+
+If:
+  PathMatch: ^lib/.*
+
+CompileFlags:
+  CompilationDatabase: ./cores/control/build/control
