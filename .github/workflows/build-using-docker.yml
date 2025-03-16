@@ -17,20 +17,20 @@ jobs:
       - name: Checkout repository with sense-firmware applications
         uses: actions/checkout@v4
         with:
-          path: sense-firmware 
+          path: sense-firmware
 
       - name: Prepare west project
         run: |
-          west init -l sense-firmware 
+          west init -l sense-firmware
           west update -o=--depth=1 -n
 
       - name: Build control core firmware
-        working-directory: sense-firmware 
+        working-directory: sense-firmware
         run: |
           west twister -T cores/control -O twister-out-control -v --inline-logs --integration
 
       - name: Build interface core firmware
-        working-directory: sense-firmware 
+        working-directory: sense-firmware
         run: |
           west twister -T cores/interface -O twister-out-interface -v --inline-logs --integration
 
@@ -42,6 +42,6 @@ jobs:
 
       # Uncomment step below when twister tests are added
       # - name: Twister Tests
-      #   working-directory: sense-firmware 
+      #   working-directory: sense-firmware
       #   run: |
       #     west twister -T tests -v --inline-logs --integration
