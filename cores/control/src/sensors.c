@@ -23,7 +23,12 @@ const struct device *const sht = DEVICE_DT_GET_ANY(sensirion_sht4x);
 #error "No st,lsm6dso compatible node found in the device tree"
 #endif
 
+#if !DT_HAS_COMPAT_STATUS_OKAY(st_lis3mdl_magn)
+#error "No st,lis3mdl compatible node found in the device tree"
+#endif
+
 const struct device *const lsm = DEVICE_DT_GET_ANY(st_lsm6dso);
+const struct device *const lis = DEVICE_DT_GET_ANY(st_lis3mdl_magn);
 #endif
 
 K_MSGQ_DEFINE(sensor_msgq, sizeof(struct sensor_reading), 5, 1);
@@ -38,6 +43,7 @@ void sht4x_poll_work_handler(struct k_work *work)
 
     sr.type = SENSOR_PKT_SHT;
 
+    /* TODO: Move device ready check into a separate function */
     if (!device_is_ready(sht)) {
 		LOG_ERR("Device %s is not ready.", sht->name);
         goto fail;
@@ -73,11 +79,23 @@ void sht4x_poll(void)
 #endif
 
 #ifdef CONFIG_APP_USE_IMU
+/** NOTE: lis3mdl does not support runtime ODR changes. Instead it is
+ *  configured via Kconfig CONFIG_LIS3MDL_ODR. I may patch the driver and
+ *  add support for this when I get the chance.
+ */
 int imu_set_sampling_frequency(double freq)
 {
+    /* TODO: Move device ready check into a separate function */
     if (!device_is_ready(lsm)) {
 		LOG_ERR("Device %s is not ready.", lsm->name);
+        return 1;
     }
+
+    /* TODO: Move device ready check into a separate function */
+    if (!device_is_ready(lis)) {
+		LOG_ERR("Device %s is not ready.", lis->name);
+        return 1;
+	}
 
     int err = 0;
     struct sensor_value imu_freq;
@@ -128,7 +146,7 @@ void imu_poll_work_handler(struct k_work *work)
 
     err = sensor_sample_fetch_chan(lsm, SENSOR_CHAN_GYRO_XYZ);
     if (err != 0) {
-        LOG_ERR("Failed to fetch accelerometer channel from LSM6DSO device");
+        LOG_ERR("Failed to fetch gyroscope channel from LSM6DSO device");
         goto fail;
     }
 
@@ -139,6 +157,20 @@ void imu_poll_work_handler(struct k_work *work)
     sr.gyro_x = sensor_value_to_double(&x);
     sr.gyro_y = sensor_value_to_double(&y);
     sr.gyro_z = sensor_value_to_double(&z);
+
+    err = sensor_sample_fetch_chan(lis, SENSOR_CHAN_MAGN_XYZ);
+    if (err != 0) {
+        LOG_ERR("Failed to fetch magnetometer channel from LIS3MDL device");
+        goto fail;
+    }
+
+    sensor_channel_get(lis, SENSOR_CHAN_MAGN_X, &x);
+    sensor_channel_get(lis, SENSOR_CHAN_MAGN_Y, &y);
+    sensor_channel_get(lis, SENSOR_CHAN_MAGN_Z, &z);
+
+    sr.mag_x = sensor_value_to_double(&x);
+    sr.mag_y = sensor_value_to_double(&y);
+    sr.mag_z = sensor_value_to_double(&z);
 
     k_msgq_put(&sensor_msgq, &sr, K_NO_WAIT);
     return;

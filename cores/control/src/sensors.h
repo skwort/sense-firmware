@@ -29,6 +29,10 @@ typedef struct sensor_reading {
     double gyro_x;
     double gyro_y;
     double gyro_z;
+
+    double mag_x;
+    double mag_y;
+    double mag_z;
 #endif
 
 } sensor_reading_t;
