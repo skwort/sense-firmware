@@ -2,15 +2,45 @@
 # the Zephyr testing tool. In this file, multiple combinations can be specified,
 # so that you can easily test all of them locally or in CI.
 sample:
-  description: SENSE Control Core 
-  name: cores-control 
+  description: SENSE Control Core
+  name: cores-control
 common:
   sysbuild: true
-  build_only: true
   integration_platforms:
     - nrf9161dk/nrf9161
 tests:
-  app.default: {}
+  app.default:
+    build_only: true
   app.debug:
+    build_only: true
     extra_overlay_confs:
       - debug.conf
+  app.sensors.both:
+    tags: sensors
+    harness: console
+    harness_config:
+      type: multi_line
+      ordered: false
+      regex:
+        - "^IMU"
+        - "^SHT"
+  app.sensors.imu:
+    extra_configs:
+      - CONFIG_APP_USE_SHT40=n
+    tags: sensors
+    harness: console
+    harness_config:
+      type: multi_line
+      ordered: false
+      regex:
+        - "^IMU"
+  app.sensors.sht:
+    extra_configs:
+      - CONFIG_APP_USE_IMU=n
+    tags: sensors
+    harness: console
+    harness_config:
+      type: multi_line
+      ordered: false
+      regex:
+        - "^SHT"
