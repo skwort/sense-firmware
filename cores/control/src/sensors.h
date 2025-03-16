@@ -38,10 +38,12 @@ typedef struct sensor_reading {
 } sensor_reading_t;
 
 #ifdef CONFIG_APP_USE_SHT40
+int sht4x_init(void);
 void sht4x_poll(void);
 #endif
 
 #ifdef CONFIG_APP_USE_IMU
+int imu_init(void);
 int imu_set_sampling_frequency(double freq);
 void imu_poll(void);
 #endif

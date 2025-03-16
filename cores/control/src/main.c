@@ -15,7 +15,12 @@ int main(void)
 	printk("SENSE Control Core version %s\n", APP_VERSION_STRING);
 
 #ifdef CONFIG_APP_USE_IMU
+    imu_init();
     imu_set_sampling_frequency(2.0);
+#endif
+
+#ifdef CONFIG_APP_USE_SHT40
+    sht4x_init();
 #endif
 
     while (1) {

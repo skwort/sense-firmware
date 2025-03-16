@@ -34,6 +34,15 @@ const struct device *const lis = DEVICE_DT_GET_ANY(st_lis3mdl_magn);
 K_MSGQ_DEFINE(sensor_msgq, sizeof(struct sensor_reading), 5, 1);
 
 #ifdef CONFIG_APP_USE_SHT40
+int sht4x_init(void)
+{
+    if (!device_is_ready(sht)) {
+		LOG_ERR("Device %s is not ready.", sht->name);
+        return 1;
+    }
+
+    return 0;
+}
 
 void sht4x_poll_work_handler(struct k_work *work)
 {
@@ -42,12 +51,6 @@ void sht4x_poll_work_handler(struct k_work *work)
     int err = 0;
 
     sr.type = SENSOR_PKT_SHT;
-
-    /* TODO: Move device ready check into a separate function */
-    if (!device_is_ready(sht)) {
-		LOG_ERR("Device %s is not ready.", sht->name);
-        goto fail;
-    }
 
     err = sensor_sample_fetch(sht);
     if (err != 0) {
@@ -79,24 +82,27 @@ void sht4x_poll(void)
 #endif
 
 #ifdef CONFIG_APP_USE_IMU
+int imu_init(void)
+{
+    if (!device_is_ready(lsm)) {
+		LOG_ERR("Device %s is not ready.", lsm->name);
+        return 1;
+    }
+
+    if (!device_is_ready(lis)) {
+		LOG_ERR("Device %s is not ready.", lis->name);
+        return 1;
+	}
+
+    return 0;
+}
+
 /** NOTE: lis3mdl does not support runtime ODR changes. Instead it is
  *  configured via Kconfig CONFIG_LIS3MDL_ODR. I may patch the driver and
  *  add support for this when I get the chance.
  */
 int imu_set_sampling_frequency(double freq)
 {
-    /* TODO: Move device ready check into a separate function */
-    if (!device_is_ready(lsm)) {
-		LOG_ERR("Device %s is not ready.", lsm->name);
-        return 1;
-    }
-
-    /* TODO: Move device ready check into a separate function */
-    if (!device_is_ready(lis)) {
-		LOG_ERR("Device %s is not ready.", lis->name);
-        return 1;
-	}
-
     int err = 0;
     struct sensor_value imu_freq;
     sensor_value_from_double(&imu_freq, freq);
