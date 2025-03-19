@@ -13,6 +13,10 @@ endmenu
 menu "SENSE IoT Control Core"
 
 menu "Onboard Sensors"
+config APP_SENSOR_DEFAULT_POLL_FREQ
+	int "The default poll frequency for the onboard sensors in milliseconds"
+	default 1000
+
 config APP_USE_SHT40
 	bool "Enable the SHT40"
 	default y

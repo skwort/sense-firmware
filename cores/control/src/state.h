@@ -12,7 +12,7 @@ enum state_codes {
 struct state {
 #ifdef CONFIG_APP_USE_SHT40
     uint8_t sht_state;
-    k_timeout_t sht_poll_freq;
+    int64_t sht_poll_freq;
     int64_t sht_last_update_tick;
 
     double sht_hum;
@@ -21,7 +21,7 @@ struct state {
 
 #ifdef CONFIG_APP_USE_IMU
     uint8_t imu_state;
-    k_timeout_t imu_poll_freq;
+    int64_t imu_poll_freq;
     int64_t imu_last_update_tick;
 
     double imu_accel_x;
