@@ -60,7 +60,8 @@ west build -p -b $BOARD -d cores/interface/build cores/interface
 ```
 
 In both of these cases `$BOARD` is the target board. The BSP will be added at
-a later date.
+a later date. For now, it is recommended to use `nrf9161dk/nrf9161/ns` for the
+control core target, and `nrf5340dk/nrf5340/ns` for the interface core target.
 
 A debug configuration is also provided. To apply it, run the previously
 specified commands, appending ``debug.conf``
@@ -95,6 +96,11 @@ The testing procedures are the discussed in the README file for each core. In
 general, the entire test suite should be run before commiting to avoid
 regressions. Pre-commit hooks will be setup at a later date to automate this
 process.
+
+The GitHub Actions CI pipeline can be skipped by appending `skip-checks: true`
+to the end of the commit message. The trailer needs to be preceeded by two
+blank lines, and the commit called with `--cleanup=verbatim` to avoid
+collapsing adjacent newlines.
 
 ### Documentation
 
