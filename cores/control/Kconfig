@@ -32,4 +32,6 @@ source "subsys/logging/Kconfig.template.log_config"
 
 rsource "../../lib/Kconfig"
 
+rsource "Kconfig.gnss"
+
 endmenu
