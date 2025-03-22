@@ -7,7 +7,7 @@ sample:
 common:
   sysbuild: true
   integration_platforms:
-    - nrf9161dk/nrf9161
+    - nrf9161dk/nrf9161/ns
 tests:
   app.default:
     build_only: true
