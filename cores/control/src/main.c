@@ -7,6 +7,7 @@
 #include <zephyr/drivers/sensor/sht4x.h>
 
 #include <lib/heartbeat.h>
+#include "gnss.h"
 #include "sensors.h"
 #include "state.h"
 
@@ -98,6 +99,13 @@ int main(void)
 
 #endif
 
+#ifdef CONFIG_APP_USE_GNSS
+    if (gnss_init(&state) != 0)
+        state.gnss_state = INIT_FAILED;
+    else
+        state.gnss_state = OK;
+#endif /* CONFIG_APP_USE_GNSS */
+
 #ifdef CONFIG_APP_USE_IMU
     /* Initialise the IMU */
     if (imu_init() != 0) {
@@ -121,8 +129,9 @@ int main(void)
 #endif
 
     while (1) {
+        poll_gnss(&state);
         poll_sensors(&state);
-        k_sleep(K_MSEC(500));
+        k_sleep(K_MSEC(250));
     }
 
     return 0;

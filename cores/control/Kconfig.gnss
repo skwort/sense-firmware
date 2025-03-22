@@ -4,47 +4,26 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-menu "GNSS sample"
+menu "GNSS Settings"
 
-config GNSS_SAMPLE_PERIODIC_INTERVAL
+config APP_USE_GNSS
+	bool "Enable the GNSS module."
+	default "y"
+
+config APP_GNSS_DEFAULT_FIX_INTERVAL
 	int "Fix interval for periodic fixes"
 	range 10 65535
 	default 120
 	help
 	  Fix interval (in seconds) for periodic fixes.
 
-config GNSS_SAMPLE_PERIODIC_TIMEOUT
+config APP_GNSS_DEFAULT_PERIODIC_TIMEOUT
 	int "Fix timeout for periodic fixes"
 	range 0 65535
-	default 120
+	default 60
 	help
 	  Fix timeout (in seconds) for periodic fixes.
 	  If set to zero, GNSS is allowed to run indefinitely until a valid PVT estimate is produced.
-
-
-choice
-	default GNSS_SAMPLE_ASSISTANCE_NONE
-	prompt "Select whether GNSS assistance is used or not"
-
-config GNSS_SAMPLE_ASSISTANCE_NONE
-	bool "Assistance not used"
-
-config GNSS_SAMPLE_ASSISTANCE_MINIMAL
-	bool "Use factory almanac, LTE network time and MCC based location"
-	select GNSS_SAMPLE_LTE_ON_DEMAND
-	select SETTINGS
-	select FCB
-	select FLASH
-	select FLASH_MAP
-
-endchoice
-
-config GNSS_SAMPLE_LOW_ACCURACY
-	bool "Allow low accuracy fixes"
-	default n
-	help
-	  Allows fixes with lower accuracy.
-
 
 module = APP_GNSS
 module-str = Control core GNSS module
