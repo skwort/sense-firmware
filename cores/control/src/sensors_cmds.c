@@ -12,7 +12,7 @@ LOG_MODULE_REGISTER(sensors_cmds);
 /* Macro for early return in shell fns if features are not supported. */
 #define RETURN_IF_FEATURE_DISABLED(CONFIG_FEATURE) \
     if (!IS_ENABLED(CONFIG_FEATURE)) { \
-        LOG_ERR(UNSUPPORTED_FEATURE_STRING); \
+        shell_print(sh, UNSUPPORTED_FEATURE_STRING); \
         return 1; \
     }
 
@@ -25,7 +25,7 @@ LOG_MODULE_REGISTER(sensors_cmds);
 /* Macro for early return in shell fns if the state mutex is unavailable. */
 #define RETURN_IF_STATE_LOCK_FAILED() \
     if (state_lock(K_MSEC(SHELL_STATE_LOCK_TIMEOUT)) != 0) { \
-        LOG_ERR(STATE_LOCK_FAILURE_STRING); \
+        shell_print(sh, STATE_LOCK_FAILURE_STRING); \
         return 1; \
     }
 
