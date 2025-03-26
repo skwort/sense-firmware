@@ -1,0 +1,4 @@
+anyio
+trio
+trio_serial
+pynrfjprog
