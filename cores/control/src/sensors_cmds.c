@@ -29,6 +29,7 @@ LOG_MODULE_REGISTER(sensors_cmds);
         return 1; \
     }
 
+#ifdef CONFIG_APP_USE_SENSORS
 static int64_t parse_poll_freq(const struct shell *sh, size_t argc,
                                char **argv)
 {
@@ -50,6 +51,7 @@ static int64_t parse_poll_freq(const struct shell *sh, size_t argc,
 
     return poll_freq;
 }
+#endif /* CONFIG_APP_USE_SENSORS */
 
 static int cmd_update_sht_poll_freq(const struct shell *sh, size_t argc,
                                     char **argv)

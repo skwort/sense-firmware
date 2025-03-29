@@ -1,5 +1,3 @@
-#ifdef CONFIG_APP_USE_GNSS
-
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <nrf_modem_gnss.h>
@@ -7,6 +5,8 @@
 #include <modem/nrf_modem_lib.h>
 
 #include "state.h"
+
+#ifdef CONFIG_APP_USE_GNSS
 
 LOG_MODULE_REGISTER(gnss, CONFIG_APP_GNSS_LOG_LEVEL);
 

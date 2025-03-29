@@ -5,6 +5,8 @@
 
 #include "state.h"
 
+#ifdef CONFIG_APP_USE_SENSORS
+
 enum sensor_reading_type {
 #ifdef CONFIG_APP_USE_SHT40
     SENSOR_PKT_SHT,
@@ -12,6 +14,7 @@ enum sensor_reading_type {
 #ifdef CONFIG_APP_USE_IMU
     SENSOR_PKT_IMU,
 #endif
+    SENSOR_PKT_INVALID
 };
 
 typedef struct sensor_reading {
@@ -54,4 +57,6 @@ int sensor_reading_get(void *data, k_timeout_t timeout);
 
 void poll_sensors(struct state *state);
 
-#endif
+#endif /* CONFIG_APP_USE_SENSORS */
+
+#endif /* SENSORS_H_ */

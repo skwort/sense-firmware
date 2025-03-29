@@ -6,6 +6,8 @@
 #include "sensors.h"
 #include "state.h"
 
+#ifdef CONFIG_APP_USE_SENSORS
+
 LOG_MODULE_REGISTER(sensors, CONFIG_APP_LOG_LEVEL);
 
 #ifdef CONFIG_APP_USE_SHT40
@@ -80,7 +82,7 @@ void sht4x_poll(void)
 {
     k_work_submit(&sht4x_poll_work);
 }
-#endif
+#endif /* CONFIG_APP_USE_SHT40 */
 
 #ifdef CONFIG_APP_USE_IMU
 int imu_init(void)
@@ -194,7 +196,7 @@ void imu_poll(void)
 {
     k_work_submit(&imu_poll_work);
 }
-#endif
+#endif /* CONFIG_APP_USE_IMU */
 
 
 int sensor_reading_get(void *data, k_timeout_t timeout)
@@ -220,7 +222,7 @@ void poll_sensors(struct state *state)
             LOG_DBG("SHT40: Temp: %.2f C  RH: %0.2f %%\n",
                     sr.temp, sr.hum);
         }
-#endif
+#endif /* CONFIG_APP_USE_SHT40 */
 
 #ifdef CONFIG_APP_USE_IMU
         else if (sr.type ==  SENSOR_PKT_IMU) {
@@ -242,7 +244,7 @@ void poll_sensors(struct state *state)
                     sr.mag_x, sr.mag_y, sr.mag_z);
 
         }
-#endif
+#endif /* CONFIG_APP_USE_IMU */
     }
 
 #ifdef CONFIG_APP_USE_SHT40
@@ -256,7 +258,7 @@ void poll_sensors(struct state *state)
         state->sht_last_update_tick = k_uptime_get();
         sht4x_poll();
     }
-#endif
+#endif /* CONFIG_APP_USE_SHT40 */
 
 #ifdef CONFIG_APP_USE_IMU
     /* Poll the IMU sensors if they are working and the specified poll duration
@@ -269,5 +271,7 @@ void poll_sensors(struct state *state)
         state->imu_last_update_tick = k_uptime_get();
         imu_poll();
     }
-#endif
+#endif /* CONFIG_APP_USE_IMU */
 }
+
+#endif /* CONFIG_APP_USE_SENSORS */

@@ -29,7 +29,7 @@ int main(void)
     }
     state->heartbeat_state = OK;
 
-#endif
+#endif /* CONFIG_HEARTBEAT */
 
 #ifdef CONFIG_APP_USE_GNSS
     if (gnss_init(state) != 0)
@@ -48,7 +48,7 @@ int main(void)
         imu_set_sampling_frequency(2.0);
     }
 
-#endif
+#endif /* CONFIG_APP_USE_IMU */
 
 #ifdef CONFIG_APP_USE_SHT40
     /* Initialise the SHT40 */
@@ -58,15 +58,20 @@ int main(void)
         state->sht_state = OK;
         state->sht_poll_freq = CONFIG_APP_SENSOR_DEFAULT_POLL_FREQ;
     }
-#endif
+#endif /* CONFIG_APP_USE_SHT40 */
 
     state_unlock();
 
     while (1) {
         state_lock(K_FOREVER);
 
+#ifdef CONFIG_APP_USE_GNSS
         poll_gnss(state);
+#endif /* CONFIG_APP_USE_GNSS */
+
+#ifdef CONFIG_APP_USE_SENSORS
         poll_sensors(state);
+#endif /* CONFIG_APP_USE_SENSORS */
 
         state_unlock();
 

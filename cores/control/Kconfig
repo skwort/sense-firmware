@@ -13,16 +13,22 @@ endmenu
 menu "SENSE IoT Control Core"
 
 menu "Onboard Sensors"
+
+config APP_USE_SENSORS
+	bool "Enable sensors module"
+
 config APP_SENSOR_DEFAULT_POLL_FREQ
 	int "The default poll frequency for the onboard sensors in milliseconds"
 	default 1000
 
 config APP_USE_SHT40
 	bool "Enable the SHT40"
+	select APP_USE_SENSORS
 	default y
 
 config APP_USE_IMU
 	bool "Enable the LSM6DSO/LIS3MDL IMU"
+	select APP_USE_SENSORS
 	default y
 endmenu
 
