@@ -2,3 +2,5 @@ anyio
 trio
 trio_serial
 pynrfjprog
+pytest
+hypothesis
