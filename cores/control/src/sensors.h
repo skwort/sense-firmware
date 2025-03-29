@@ -3,6 +3,8 @@
 
 #include <zephyr/kernel.h>
 
+#include "state.h"
+
 enum sensor_reading_type {
 #ifdef CONFIG_APP_USE_SHT40
     SENSOR_PKT_SHT,
@@ -49,5 +51,7 @@ void imu_poll(void);
 #endif
 
 int sensor_reading_get(void *data, k_timeout_t timeout);
+
+void poll_sensors(struct state *state);
 
 #endif
