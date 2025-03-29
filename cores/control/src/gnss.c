@@ -156,19 +156,19 @@ static void process_fix_data(struct nrf_modem_gnss_pvt_data_frame *pvt_data,
     LOG_INF("Latitude           %.06f", pvt_data->latitude);
     LOG_INF("Longitude:         %.06f", pvt_data->longitude);
     LOG_INF("Accuracy:          %.01f m", (double)pvt_data->accuracy);
-    LOG_INF("Altitude:          %.01f m", (double)pvt_data->altitude);
-    LOG_INF("Altitude accuracy: %.01f m", (double)pvt_data->altitude_accuracy);
-    LOG_INF("Speed:             %.01f m/s", (double)pvt_data->speed);
-    LOG_INF("Speed accuracy:    %.01f m/s", (double)pvt_data->speed_accuracy);
-    LOG_INF("V. speed:          %.01f m/s", (double)pvt_data->vertical_speed);
-    LOG_INF("V. speed accuracy: %.01f m/s", (double)pvt_data->vertical_speed_accuracy);
-    LOG_INF("Heading:           %.01f deg", (double)pvt_data->heading);
-    LOG_INF("Heading accuracy:  %.01f deg", (double)pvt_data->heading_accuracy);
-    LOG_INF("Date:              %04u-%02u-%02u",
+    LOG_DBG("Altitude:          %.01f m", (double)pvt_data->altitude);
+    LOG_DBG("Altitude accuracy: %.01f m", (double)pvt_data->altitude_accuracy);
+    LOG_DBG("Speed:             %.01f m/s", (double)pvt_data->speed);
+    LOG_DBG("Speed accuracy:    %.01f m/s", (double)pvt_data->speed_accuracy);
+    LOG_DBG("V. speed:          %.01f m/s", (double)pvt_data->vertical_speed);
+    LOG_DBG("V. speed accuracy: %.01f m/s", (double)pvt_data->vertical_speed_accuracy);
+    LOG_DBG("Heading:           %.01f deg", (double)pvt_data->heading);
+    LOG_DBG("Heading accuracy:  %.01f deg", (double)pvt_data->heading_accuracy);
+    LOG_DBG("Date:              %04u-%02u-%02u",
            pvt_data->datetime.year,
            pvt_data->datetime.month,
            pvt_data->datetime.day);
-    LOG_INF("Time (UTC):        %02u:%02u:%02u.%03u",
+    LOG_DBG("Time (UTC):        %02u:%02u:%02u.%03u",
            pvt_data->datetime.hour,
            pvt_data->datetime.minute,
            pvt_data->datetime.seconds,
