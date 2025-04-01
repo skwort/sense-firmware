@@ -1,0 +1,17 @@
+board:
+  name: sense_core
+  full_name: SENSE IoT Core
+  vendor: skwort
+  socs:
+  - name: nrf9161
+    variants:
+    - name: 'ns'
+  - name: 'nrf5340'
+    variants:
+    - name: 'ns'
+      cpucluster: 'cpuapp'
+  revision:
+    format: major.minor.patch
+    default: "0.0.0"
+    revisions:
+    - name: "0.0.0"

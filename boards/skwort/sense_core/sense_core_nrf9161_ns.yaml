@@ -1,0 +1,16 @@
+identifier: sense_core/nrf9161/ns
+name: SENSE-Core-NRF9161-Non-Secure
+type: mcu
+arch: arm
+toolchain:
+  - gnuarmemb
+  - xtools
+  - zephyr
+ram: 128
+flash: 192
+supported:
+  - i2c
+  - pwm
+  - watchdog
+  - netif:modem
+vendor: skwort

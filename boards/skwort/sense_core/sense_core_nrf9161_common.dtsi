@@ -1,0 +1,170 @@
+#include "sense_core_nrf9161_common-pinctrl.dtsi"
+
+/ {
+	model = "SENSE Core: NRF9161";
+	compatible = "skwort,sense-core-nrf9161";
+
+	leds {
+		compatible = "gpio-leds";
+		hb0: hb0 {
+			gpios = <&gpio0 22 GPIO_ACTIVE_HIGH>;
+			label = "Heartbeat GPIO";
+		};
+	};
+
+	ls_5vl: load_switch_5vl {
+		compatible = "load-switch";
+		gpios = <&gpio0 13 GPIO_ACTIVE_HIGH>;
+	};
+
+	ls_5vh: load_switch_5vh{
+		compatible = "load-switch";
+		gpios = <&gpio0 9 GPIO_ACTIVE_HIGH>;
+	};
+
+	ls_sensors: load_switch_sensors {
+		compatible = "load-switch";
+		gpios = <&gpio0 8 GPIO_ACTIVE_HIGH>;
+	};
+
+	ls_spiflash: load_switch_spiflash {
+		compatible = "load-switch";
+		gpios = <&gpio0 31 GPIO_ACTIVE_HIGH>;
+	};
+
+	ls_sdcard: load_switch_sdcard {
+		compatible = "load-switch";
+		gpios = <&gpio0 26 GPIO_ACTIVE_HIGH>;
+	};
+
+	aliases {
+		heartbeat-gpio = &hb0;
+		bootloader-led0 = &hb0;
+		mcuboot-led0 = &hb0;
+		watchdog0 = &wdt0;
+	};
+};
+
+&gpiote {
+	status = "okay";
+};
+
+&gpio0 {
+	status = "okay";
+};
+
+&uart0 {
+	status = "disabled";
+	current-speed = <115200>;
+	pinctrl-0 = <&uart0_default>;
+	pinctrl-1 = <&uart0_sleep>;
+	pinctrl-names = "default", "sleep";
+};
+
+&spi0 {
+	compatible = "nordic,nrf-spim";
+	status = "okay";
+	cs-gpios = <&gpio0 27 GPIO_ACTIVE_LOW>;
+	pinctrl-0 = <&spi0_default>;
+	pinctrl-1 = <&spi0_sleep>;
+	pinctrl-names = "default", "sleep";
+
+        sdhc0: sdhc@0 {
+                compatible = "zephyr,sdhc-spi-slot";
+                reg = <0>;
+                status = "okay";
+                mmc {
+                    compatible = "zephyr,sdmmc-disk";
+                    status = "okay";
+                };
+                spi-max-frequency = <25000000>;
+        };
+};
+
+&spi1 {
+	compatible = "nordic,nrf-spim";
+	status = "okay";
+	cs-gpios = <&gpio0 2 GPIO_ACTIVE_LOW>;
+	pinctrl-0 = <&spi1_default>;
+	pinctrl-1 = <&spi1_sleep>;
+	pinctrl-names = "default", "sleep";
+
+	w25q128jv: w25q128jv@0 {
+		compatible = "jedec,spi-nor";
+		status = "okay";
+		reg = <0>;
+		spi-max-frequency = <8000000>;
+		size = <DT_SIZE_M(128)>;
+		jedec-id = [ef 40 18];
+		has-dpd;
+		t-enter-dpd = <3000>;
+		t-exit-dpd = <30000>;
+
+	};
+};
+
+&spi2 {
+	compatible = "nordic,nrf-spim";
+	status = "okay";
+	cs-gpios = <&gpio0 15 GPIO_ACTIVE_LOW>,  // NRF53 MCU
+		   <&gpio0 11 GPIO_ACTIVE_LOW>;  // AUX MCU
+	pinctrl-0 = <&spi2_default>;
+	pinctrl-1 = <&spi2_sleep>;
+	pinctrl-names = "default", "sleep";
+
+	nrf53_spi: nrf53_spi@0 {
+		reg = <0>;
+	};
+
+	aux_spi: aux_spi@1 {
+		status = "disabled";
+		reg = <1>;
+	};
+};
+
+&i2c3 {
+	compatible = "nordic,nrf-twim";
+	status = "okay";
+	pinctrl-0 = <&i2c3_default>;
+	pinctrl-1 = <&i2c3_sleep>;
+	pinctrl-names = "default", "sleep";
+	clock-frequency = <100000>;
+
+	sht4x: sht4x@44 {
+		compatible = "sensirion,sht4x";
+		status = "okay";
+		reg = <0x44>;
+		repeatability = <2>;
+	};
+
+	lsm6dso: lsm6dso@6b {
+		compatible = "st,lsm6dso";
+		status = "okay";
+		reg = <0x6b>;
+	};
+
+	lis3mdl: lis3mdl@1c {
+		compatible = "st,lis3mdl-magn";
+		status = "okay";
+		reg = <0x1c>;
+	};
+
+	ads1015_adc0: ads1015_adc0@49{
+		compatible = "ti,ads1015";
+		status = "okay";
+		reg = <0x49>;
+		#io-channel-cells = <1>;
+	};
+
+	ads1015_adc1: ads1015_adc1@48{
+		compatible = "ti,ads1015";
+		status = "okay";
+		reg = <0x48>;
+		#io-channel-cells = <1>;
+	};
+
+};
+
+
+/* Include default memory partition configuration file */
+#include <common/nordic/nrf91xx_partition.dtsi>

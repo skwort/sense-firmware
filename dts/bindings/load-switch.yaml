@@ -1,0 +1,10 @@
+description: GPIO pin to enable or disable a load-switch
+
+compatible: "load-switch"
+
+properties:
+  gpios:
+    type: phandle-array
+    required: true
+    description: |
+      The GPIO connected to the enable pin of the load switch.

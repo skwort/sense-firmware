@@ -1,0 +1,18 @@
+identifier: sense_core/nrf9161
+name: SENSE-Core-NRF9161
+type: mcu
+arch: arm
+toolchain:
+  - gnuarmemb
+  - xtools
+  - zephyr
+ram: 88
+flash: 1024
+supported:
+  - gpio
+  - i2c
+  - pwm
+  - spi
+  - watchdog
+  - counter
+vendor: skwort
