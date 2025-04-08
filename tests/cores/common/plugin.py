@@ -1,6 +1,7 @@
 import pytest
 import json
 from .nrf9161dk import nRF9161DK
+from .sensecore import SenseCore
 
 
 def pytest_addoption(parser):
@@ -95,6 +96,9 @@ async def board(board_name, port, baud, fw_image, serial_number, build_map):
 
     if board_name.lower() == "nrf9161dk":
         board = nRF9161DK(port, baud, fw_image, config,
+                          serial_number=serial_number)
+    elif board_name.lower() == "sense_core/nrf9161":
+        board = SenseCore(fw_image, config, board_name,
                           serial_number=serial_number)
     else:
         raise ValueError("Unknown board")
