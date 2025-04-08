@@ -19,3 +19,11 @@ If:
 
 CompileFlags:
   CompilationDatabase: ./cores/control/build/control
+
+---
+
+If:
+  PathMatch: ^boards/skwort/sense_core/.*
+
+CompileFlags:
+  CompilationDatabase: ./cores/control/build/control
