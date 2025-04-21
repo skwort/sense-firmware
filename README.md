@@ -1,7 +1,10 @@
 # SENSE Firmware
 
-<a href="https://github.com/skwort/sense-firmware/actions/workflows/build-using-docker.yml?query=branch%3Amain">
-  <img src="https://github.com/skwort/sense-firmware/actions/workflows/build-using-docker.yml/badge.svg?event=push">
+<a href="https://github.com/skwort/sense-firmware/actions/workflows/build-control-core.yml?query=branch%3Amain">
+  <img src="https://github.com/skwort/sense-firmware/actions/workflows/build-control-core.yml/badge.svg?event=push">
+</a>
+<a href="https://github.com/skwort/sense-firmware/actions/workflows/build-interface-core.yml?query=branch%3Amain">
+  <img src="https://github.com/skwort/sense-firmware/actions/workflows/build-interface-core.yml/badge.svg?event=push">
 </a>
 <a href="https://github.com/skwort/sense-firmware/actions/workflows/docs.yml?query=branch%3Amain">
   <img src="https://github.com/skwort/sense-firmware/actions/workflows/docs.yml/badge.svg?event=push">
