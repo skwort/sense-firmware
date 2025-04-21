@@ -1,6 +1,6 @@
 config HEARTBEAT
 	bool "Enable the heartbeat"
-	default y
+	default n
 	select GPIO
 	help
 	  This option enables the 'heartbeat' library

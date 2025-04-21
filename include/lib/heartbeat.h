@@ -3,6 +3,8 @@
 
 #include <zephyr/kernel.h>
 
+#ifdef CONFIG_HEARTBEAT
+
 /**
  * @defgroup lib_heartbeat Heartbeat timer library
  * @ingroup lib
@@ -13,7 +15,7 @@
  * @brief Initialises and starts the heartbeat timer.
  *
  * This function initialises the heartbeat GPIO and starts a timer with the
- * specified duration. If the timer has already been initialized, it will
+ * specified duration. If the timer has already been initialised, it will
  * simply restart the timer with a new duration. The heartbeat GPIO must be
  * aliased in devicetree as "heartbeat-gpio".
  *
@@ -30,5 +32,7 @@ int heartbeat_init_start(k_timeout_t duration);
 void heartbeat_stop(void);
 
 /** @} */
+
+#endif /* CONFIG_HEARTBEAT */
 
 #endif /* LIB_HEARTBEAT_H_ */
