@@ -1,0 +1,39 @@
+name: Build Control Core
+
+on:
+  push:
+    paths:
+      - 'cores/control/**'
+      - 'CMakeLists.txt'
+      - 'Kconfig'
+      - '.github/workflows/build-control-core.yml'
+  pull_request:
+    paths:
+      - 'cores/control/**'
+      - 'CMakeLists.txt'
+      - 'Kconfig'
+      - '.github/workflows/build-control-core.yml'
+
+jobs:
+  build-control:
+    runs-on: ubuntu-22.04
+    container: ghcr.io/nrfconnect/sdk-nrf-toolchain:v2.9.1
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          path: sense-firmware
+
+      - name: Prepare west project
+        run: |
+          west init -l sense-firmware
+          west update -o=--depth=1 -n
+
+      - name: Build control core firmware
+        working-directory: sense-firmware
+        run: |
+          west twister -T cores/control -O twister-out-control -v --inline-logs --integration
