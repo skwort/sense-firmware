@@ -1,0 +1,19 @@
+config ICMP
+	bool "Enable the Inter-Core Message Protocol"
+	default n
+	select CRC
+	help
+	  This option enables the 'ICMP' library.
+
+
+config ICMP_MAX_PAYLOAD_SIZE
+	int "Maximum payload size for ICMP messages"
+	default 64
+	help
+	  This value represents the maximum payload size for ICMP messages. It
+	  should be tuned according to the maximum expected payload size to
+	  reduce the memory footprint of the ICMP module.
+
+module = ICMP
+module-str = ICMP
+source "subsys/logging/Kconfig.template.log_config"

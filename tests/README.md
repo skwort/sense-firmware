@@ -1,6 +1,5 @@
 # Tests
-This directory stores the tests the SENSE IoT Platform Firmware. Tests are only
-available for the control core at present.
+This directory stores the tests the SENSE IoT Platform Firmware.
 
 ## Cores
 The `cores` directory stores tests associated with each of the SENSE firmware
@@ -121,3 +120,40 @@ directly to stdout.
 
 The series of steps described above needs to be repeated for each core under
 `cores/`.
+
+## Lib
+The `lib` directory stores tests for each of the libraries used with the
+SENSE Firmware project.
+
+Each subdirectory corresponds to a specific library and includes dedicated test
+cases to verify its functionality in isolation. This setup enables unit testing
+and validation of library behaviour without requiring the full application
+context.
+
+### Test Architecture
+The current suite of tests use the ZTest framework and are run against the
+`native_sim` platform.
+
+### Test Procedure
+Tests are run using twister. Use the commands below to run the tests and
+generate a coverage report:
+
+```sh
+# Remove previous build and coverage artifacts
+[ -d "twister-out-lib" ] && rm -rf "twister-out-lib" || true
+[ -d "gcov_html" ] && rm -rf "gcov_html" || true
+
+# Run tests
+west twister -v \
+    --integration \
+    -T tests/lib/ \
+    -O twister-out-lib
+
+# Generate HTML report
+mkdir gcov_html
+gcovr \
+    --root "$(pwd)" \
+    --filter 'lib/' \
+    --print-summary \
+    --html --html-details -o gcov_html/index.html
+```

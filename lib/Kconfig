@@ -3,3 +3,9 @@ menu "Heartbeat Library"
 rsource "heartbeat/Kconfig"
 
 endmenu
+
+menu "ICMP Library"
+
+rsource "icmp/Kconfig"
+
+endmenu

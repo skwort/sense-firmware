@@ -13,6 +13,7 @@ build-control:
 
     # Fix clangd warnings
     @sed -i 's/-fno-reorder-functions//g' cores/control/build/control/compile_commands.json
+    @sed -i 's/-fno-printf-return-value//g' cores/control/build/control/compile_commands.json
     @sed -i 's/-mfp16-format=ieee//g' cores/control/build/control/compile_commands.json
 
 test-control:
@@ -58,10 +59,38 @@ build-interface:
 
     # Fix clangd warnings
     @sed -i 's/-fno-reorder-functions//g' cores/interface/build/interface/compile_commands.json
+    @sed -i 's/-fno-printf-return-value//g' cores/interface/build/interface/compile_commands.json
     @sed -i 's/-mfp16-format=ieee//g' cores/interface/build/interface/compile_commands.json
 
 flash-interface:
     west flash -d cores/interface/build
+
+test-lib:
+    # Remove previous build and coverage artifacts
+    [ -d "twister-out-lib" ] && rm -rf "twister-out-lib" || true
+    [ -d "gcov_html" ] && rm -rf "gcov_html" || true
+
+    # Run tests
+    west twister -v \
+        --integration \
+        -T tests/lib/ \
+        -O twister-out-lib
+
+    # Fix clangd warnings
+    find twister-out-lib/native_sim/ -type f -name compile_commands.json -exec sed -i 's/-fno-reorder-functions//g' {} +
+    find twister-out-lib/native_sim/ -type f -name compile_commands.json -exec sed -i 's/-fno-freestanding//g' {} +
+
+    # Generate HTML report
+    mkdir gcov_html
+    gcovr \
+        --root "$(pwd)" \
+        --filter 'lib/' \
+        --print-summary \
+        --html --html-details -o gcov_html/index.html
+
+    xdg-open gcov_html/index.html
+
+    python scripts/ci/twister_summary_terminal.py twister-out-lib/twister.json
 
 cloc:
     cloc --not-match-d='build' boards/ cores/ lib/ include/ tests/ scripts/

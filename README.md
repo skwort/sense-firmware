@@ -6,6 +6,9 @@
 <a href="https://github.com/skwort/sense-firmware/actions/workflows/build-interface-core.yml?query=branch%3Amain">
   <img src="https://github.com/skwort/sense-firmware/actions/workflows/build-interface-core.yml/badge.svg?event=push">
 </a>
+<a href="https://github.com/skwort/sense-firmware/actions/workflows/test-libs.yml?query=branch%3Amain">
+  <img src="https://github.com/skwort/sense-firmware/actions/workflows/test-libs.yml/badge.svg?event=push">
+</a>
 <a href="https://github.com/skwort/sense-firmware/actions/workflows/docs.yml?query=branch%3Amain">
   <img src="https://github.com/skwort/sense-firmware/actions/workflows/docs.yml/badge.svg?event=push">
 </a>

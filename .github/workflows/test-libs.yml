@@ -1,0 +1,49 @@
+name: Build and Test Libraries
+
+on:
+  push:
+    paths:
+      - 'include/**'
+      - 'lib/**'
+      - 'tests/lib/**'
+      - '.github/workflows/test-libs.yml'
+  pull_request:
+    paths:
+      - 'include/**'
+      - 'lib/**'
+      - 'tests/lib/**'
+      - '.github/workflows/test-libs.yml'
+
+jobs:
+  test-libs:
+    runs-on: ubuntu-22.04
+    container: ghcr.io/nrfconnect/sdk-nrf-toolchain:v2.9.1
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Install native_sim build dependencies
+        run: |
+          apt-get update
+          apt-get install -y gcc gcc-multilib make
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          path: sense-firmware
+
+      - name: Prepare west project
+        run: |
+          west init -l sense-firmware
+          west update -o=--depth=1 -n
+
+      - name: Test libraries
+        working-directory: sense-firmware
+        run: |
+          west twister -v --inline-logs --integration -T tests/lib/ -O twister-out-lib
+
+      - name: Generate test report
+        working-directory: sense-firmware
+        run: |
+          python3 scripts/ci/twister_summary_markdown.py twister-out-lib/twister.json >> $GITHUB_STEP_SUMMARY
