@@ -1,6 +1,7 @@
 #ifndef _LIB_ICMP_FRAME_H_
 #define _LIB_ICMP_FRAME_H_
 
+#include <zephyr/kernel.h>
 #include <zephyr/sys/crc.h>
 #include <lib/icmp.h>
 
@@ -11,6 +12,7 @@
                                       payload_len)
 
 #define ICMP_MIN_FRAME_SIZE ICMP_HEADER_SIZE + ICMP_CRC_SIZE
+#define ICMP_MAX_FRAME_SIZE ICMP_FRAME_SIZE(ICMP_MAX_PAYLOAD_SIZE)
 
 /**
  * @brief Packs an ICMP frame into a byte buffer.
@@ -49,6 +51,18 @@ int icmp_frame_unpack(struct icmp_frame *frame, uint8_t *buf, size_t buf_len);
 static inline uint16_t icmp_crc16_calc(const uint8_t *data, size_t len)
 {
     return crc16_ansi(data, len);
+}
+
+extern struct k_mem_slab icmp_slab;
+
+static inline int icmp_frame_alloc(struct icmp_frame **frame)
+{
+    return k_mem_slab_alloc(&icmp_slab, (void **)frame, K_NO_WAIT);
+}
+
+static inline void icmp_frame_free(struct icmp_frame *frame)
+{
+    return k_mem_slab_free(&icmp_slab, (void *)frame);
 }
 
 #endif /* _LIB_ICMP_FRAME_H_ */

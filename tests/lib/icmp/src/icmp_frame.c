@@ -2,8 +2,6 @@
 #include <lib/icmp.h>
 #include "icmp_frame.h"
 
-#define MAX_BUF ICMP_FRAME_SIZE(ICMP_MAX_PAYLOAD_SIZE)
-
 /* Fixture for generating a valid frame */
 static struct icmp_frame valid_frame(void)
 {
@@ -19,7 +17,7 @@ static struct icmp_frame valid_frame(void)
 
 ZTEST(icmp_frame, test_pack_and_unpack_basic)
 {
-	uint8_t buf[MAX_BUF];
+	uint8_t buf[ICMP_MAX_FRAME_SIZE];
 	struct icmp_frame original = valid_frame();
 	struct icmp_frame unpacked = {0};
 
@@ -41,7 +39,7 @@ ZTEST(icmp_frame, test_pack_and_unpack_basic)
 
 ZTEST(icmp_frame, test_pack_frame_null)
 {
-	uint8_t buf[MAX_BUF];
+	uint8_t buf[ICMP_MAX_FRAME_SIZE];
 
 	int ret = icmp_frame_pack(NULL, buf, sizeof(buf));
 	zassert_equal(ret, -EINVAL, "Expected EINVAL for NULL frame");
@@ -57,7 +55,7 @@ ZTEST(icmp_frame, test_pack_buffer_null)
 
 ZTEST(icmp_frame, test_unpack_frame_null)
 {
-	uint8_t buf[MAX_BUF];
+	uint8_t buf[ICMP_MAX_FRAME_SIZE];
 
 	int ret = icmp_frame_unpack(NULL, buf, sizeof(buf));
 	zassert_equal(ret, -EINVAL, "Expected EINVAL for NULL frame");
@@ -81,7 +79,7 @@ ZTEST(icmp_frame, test_pack_payload_too_big)
 		.payload = {0}
 	};
 
-	uint8_t buf[MAX_BUF];
+	uint8_t buf[ICMP_MAX_FRAME_SIZE];
 
 	int ret = icmp_frame_pack(&frame, buf, sizeof(buf));
 	zassert_equal(ret, -EINVAL, "Expected EINVAL for oversized payload.");
@@ -89,7 +87,7 @@ ZTEST(icmp_frame, test_pack_payload_too_big)
 
 ZTEST(icmp_frame, test_unpack_payload_too_big)
 {
-	uint8_t buf[MAX_BUF];
+	uint8_t buf[ICMP_MAX_FRAME_SIZE];
 	struct icmp_frame temp_frame = valid_frame();
 
 	int ret = icmp_frame_pack(&temp_frame, buf, sizeof(buf));
@@ -123,7 +121,7 @@ ZTEST(icmp_frame, test_unpack_buffer_too_small)
 
 ZTEST(icmp_frame, test_pack_invalid_type)
 {
-	uint8_t buf[MAX_BUF];
+	uint8_t buf[ICMP_MAX_FRAME_SIZE];
 	struct icmp_frame frame = valid_frame();
     frame.type = ICMP_TYPE_INVALID;
 
@@ -133,7 +131,7 @@ ZTEST(icmp_frame, test_pack_invalid_type)
 
 ZTEST(icmp_frame, test_unpack_invalid_type)
 {
-	uint8_t buf[MAX_BUF];
+	uint8_t buf[ICMP_MAX_FRAME_SIZE];
 	struct icmp_frame frame = valid_frame();
 	int ret = icmp_frame_pack(&frame, buf, sizeof(buf));
 	zassert_true(ret > 0, "Packing failed with error %d", ret);
@@ -146,7 +144,7 @@ ZTEST(icmp_frame, test_unpack_invalid_type)
 
 ZTEST(icmp_frame, test_unpack_invalid_crc)
 {
-	uint8_t buf[MAX_BUF];
+	uint8_t buf[ICMP_MAX_FRAME_SIZE];
 	struct icmp_frame original = valid_frame();
 	int packed_len = icmp_frame_pack(&original, buf, sizeof(buf));
 
@@ -167,7 +165,7 @@ ZTEST(icmp_frame, test_zero_length_payload)
 		.length = 0,
 	};
 
-	uint8_t buf[MAX_BUF];
+	uint8_t buf[ICMP_MAX_FRAME_SIZE];
 	struct icmp_frame unpacked = {0};
 
 	int packed_len = icmp_frame_pack(&frame, buf, sizeof(buf));
@@ -192,7 +190,7 @@ ZTEST(icmp_frame, test_max_payload)
 		frame.payload[i] = i;
 	}
 
-	uint8_t buf[MAX_BUF];
+	uint8_t buf[ICMP_MAX_FRAME_SIZE];
 	struct icmp_frame unpacked = {0};
 
 	int packed_len = icmp_frame_pack(&frame, buf, sizeof(buf));
@@ -202,6 +200,14 @@ ZTEST(icmp_frame, test_max_payload)
 	zassert_equal(ret, 0, "Unpacking failed");
 
 	zassert_mem_equal(unpacked.payload, frame.payload, frame.length);
+}
+
+ZTEST(icmp_frame, test_frame_alloc_and_free)
+{
+    struct icmp_frame *frame;
+    int ret = icmp_frame_alloc(&frame);
+    zassert_true(ret == 0, "Frame alloc failed");
+    icmp_frame_free(frame);
 }
 
 ZTEST_SUITE(icmp_frame, NULL, NULL, NULL, NULL, NULL);

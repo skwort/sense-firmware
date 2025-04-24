@@ -24,7 +24,7 @@ ZTEST(icmp_queue, test_tx_queue_basic)
 
     valid_frame(in_frame);
 
-    int ret = icmp_tx_enqueue(in_frame, K_NO_WAIT);
+    int ret = icmp_tx_enqueue(&in_frame, K_NO_WAIT);
     zassert_true(ret == 0, "TX enqueue failed.");
 
     ret = icmp_tx_dequeue(&out_frame, K_NO_WAIT);
@@ -42,7 +42,7 @@ ZTEST(icmp_queue, test_rx_queue_basic)
 
     valid_frame(in_frame);
 
-    int ret = icmp_rx_enqueue(in_frame, K_NO_WAIT);
+    int ret = icmp_rx_enqueue(&in_frame, K_NO_WAIT);
     zassert_true(ret == 0, "TX enqueue failed.");
 
     ret = icmp_rx_dequeue(&out_frame, K_NO_WAIT);

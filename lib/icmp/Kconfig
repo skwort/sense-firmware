@@ -5,14 +5,24 @@ config ICMP
 	help
 	  This option enables the 'ICMP' library.
 
-
 config ICMP_MAX_PAYLOAD_SIZE
 	int "Maximum payload size for ICMP messages"
 	default 64
+	depends on ICMP
 	help
 	  This value represents the maximum payload size for ICMP messages. It
 	  should be tuned according to the maximum expected payload size to
 	  reduce the memory footprint of the ICMP module.
+
+config ICMP_MAX_MEM_SLAB_FRAMES
+	int "Maximum number of ICMP frames allowed on the memory slab"
+	depends on ICMP
+	default 8
+	help
+	  Memory slab blocks are used to store the in-flight ICMP frames. This
+	  Kconfig variable sets the upper limit on the number of in-flight
+	  frames allowed within the ICMP server. The chosen value should be
+	  tuned to balance performance and memory overhead.
 
 module = ICMP
 module-str = ICMP

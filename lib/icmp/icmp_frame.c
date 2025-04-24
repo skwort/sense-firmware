@@ -3,6 +3,11 @@
 #include <lib/icmp.h>
 #include "icmp_frame.h"
 
+K_MEM_SLAB_DEFINE(icmp_slab,                      \
+                  sizeof(struct icmp_frame),      \
+                  CONFIG_ICMP_MAX_MEM_SLAB_FRAMES, \
+                  4);
+
 int icmp_frame_pack(struct icmp_frame *frame, uint8_t *buf, size_t buf_len)
 {
     /* Ensure frame and buf are non-null */
