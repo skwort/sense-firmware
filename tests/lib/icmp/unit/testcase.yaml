@@ -1,5 +1,5 @@
 tests:
-  lib.icmp:
+  lib.icmp.unit:
     platform_allow: native_sim
     tags: icmp
     timeout: 5
