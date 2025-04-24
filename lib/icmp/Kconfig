@@ -24,6 +24,11 @@ config ICMP_MAX_MEM_SLAB_FRAMES
 	  frames allowed within the ICMP server. The chosen value should be
 	  tuned to balance performance and memory overhead.
 
+config ICMP_MAX_TARGETS
+	int "Maximum number of ICMP targets allowed in the dispatch table"
+	depends on ICMP
+	default 5
+
 module = ICMP
 module-str = ICMP
 source "subsys/logging/Kconfig.template.log_config"
