@@ -26,9 +26,12 @@ struct icmp_frame {
 /* Callback type for handling received frames */
 typedef void (*icmp_callback_t)(const uint8_t *payload, size_t payload_len);
 
-/* Callback type for command response */
-typedef void (*icmp_response_cb_t)(int result,
-                                   const uint8_t *payload,
+/* Callback type for command response. The user_data pointer is issue to the
+ * ICMP server by the icmp_command operation. It is the caller's responsibility
+ * to ensure that access to `user_data` is thread-safe. ICMP will never
+ * dereference the `user_data` pointer; it will only store the pointer then
+ * pass it to the callback. */
+typedef void (*icmp_response_cb_t)(const uint8_t *payload,
                                    size_t payload_len,
                                    void *user_data);
 

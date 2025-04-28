@@ -5,6 +5,9 @@
 #include "icmp_queue.h"
 #include "icmp_frame.h"
 
+/* Forward declaration of testing function for resetting inflight state */
+void icmp_test_reset_inflight_state(void);
+
 ZTEST(icmp, test_icmp_command_ok)
 {
     /* Send the command */
@@ -12,7 +15,6 @@ ZTEST(icmp, test_icmp_command_ok)
     int ret = icmp_command(0x01, payload, 5, NULL, NULL);
     zassert_true(ret == 0, "Failed to issue ICMP COMMAND: %d", ret);
 
-    /* Send the command */
     struct icmp_frame *frame = NULL;
     ret = icmp_tx_dequeue(&frame, K_NO_WAIT);
     zassert_true(ret == 0,
@@ -24,6 +26,51 @@ ZTEST(icmp, test_icmp_command_ok)
     zassert_mem_equal(frame->payload, payload, 5);
 
     icmp_frame_free(frame);
+    icmp_test_reset_inflight_state();
+}
+
+#if CONFIG_ICMP_MAX_INFLIGHT_MSGS_8
+#define ICMP_MAX_INFLIGHT_MSGS 8
+#elif CONFIG_ICMP_MAX_INFLIGHT_MSGS_16
+#define ICMP_MAX_INFLIGHT_MSGS 16
+#elif CONFIG_ICMP_MAX_INFLIGHT_MSGS_32
+#define ICMP_MAX_INFLIGHT_MSGS 32
+#else
+#error "Maximum number of ICMP inflight messages is undefined."
+#endif
+
+ZTEST(icmp, test_icmp_command_msg_id_overflow)
+{
+    /* Send the maximum number of commands */
+    uint8_t payload[] = { 'H', 'e', 'l', 'l', 'o'};
+
+    /* Send the maximum number of commands */
+    int ret = 0;
+    for (int i = 0; i < ICMP_MAX_INFLIGHT_MSGS; i++) {
+        ret = icmp_command(0x01, payload, 5, NULL, NULL);
+        zassert_true(ret == 0, "Failed to issue ICMP COMMAND: %d", ret);
+    }
+
+    /* Try sending an extra command */
+    ret = icmp_command(0x01, payload, 5, NULL, NULL);
+    zassert_true(ret == -EAGAIN, "ICMP inflight messages didn't overflow");
+
+    /* Clean up */
+    struct icmp_frame *frame = NULL;
+    for (int i = 0; i < ICMP_MAX_INFLIGHT_MSGS; i++) {
+        ret = icmp_tx_dequeue(&frame, K_NO_WAIT);
+        zassert_true(ret == 0,
+                    "Failed to extract item from icmp tx_queue: %d", ret);
+
+        zassert_equal(frame->type, ICMP_TYPE_COMMAND);
+        zassert_equal(frame->target, 0x01);
+        zassert_equal(frame->length, 5);
+        zassert_mem_equal(frame->payload, payload, 5);
+
+        icmp_frame_free(frame);
+        frame = NULL;
+    }
+    icmp_test_reset_inflight_state();
 }
 
 ZTEST(icmp, test_icmp_response_ok)

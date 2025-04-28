@@ -39,6 +39,36 @@ config ICMP_THREAD_PRIORITY
 	depends on ICMP
 	default 5
 
+choice ICMP_MAX_INFLIGHT_MSGS
+	prompt "Select ICMP maximum inflight messages"
+	depends on ICMP
+	default ICMP_MAX_INFLIGHT_MSGS_8
+
+config ICMP_MAX_INFLIGHT_MSGS_8
+	bool "8"
+	help
+	  Select 8 maximum inflight messages for the ICMP server.
+
+config ICMP_MAX_INFLIGHT_MSGS_16
+	bool "16"
+	help
+	  Select 16 maximum inflight messages for the ICMP server.
+
+config ICMP_MAX_INFLIGHT_MSGS_32
+	bool "32"
+	help
+	  Select 32 maximum inflight messages for the ICMP server.
+
+endchoice # ICMP_MAX_INFLIGHT_MSGS
+
+config ICMP_TESTING
+	bool "Enable special unit testing functions."
+	depends on ICMP
+	default n
+	help
+	  This Kconfig includes additonal functions for testing purposes in the
+	  build. This value must be disable for production builds.
+
 module = ICMP
 module-str = ICMP
 source "subsys/logging/Kconfig.template.log_config"
