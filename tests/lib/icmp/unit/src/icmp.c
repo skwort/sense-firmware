@@ -127,10 +127,16 @@ ZTEST(icmp, test_icmp_register_target_ok)
     zassert_true(ret == 0, "Unexpected return: %d", ret);
 }
 
-ZTEST(icmp, test_icmp_register_target_fail)
+ZTEST(icmp, test_icmp_register_target_fail_target)
 {
     int ret = icmp_register_target(CONFIG_ICMP_MAX_TARGETS,
                                    (icmp_callback_t)rx_callback);
+    zassert_true(ret == -EINVAL, "Unexpected return: %d", ret);
+}
+
+ZTEST(icmp, test_icmp_register_target_fail_cb)
+{
+    int ret = icmp_register_target(0x01, NULL);
     zassert_true(ret == -EINVAL, "Unexpected return: %d", ret);
 }
 

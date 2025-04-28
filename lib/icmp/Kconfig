@@ -25,7 +25,17 @@ config ICMP_MAX_MEM_SLAB_FRAMES
 	  tuned to balance performance and memory overhead.
 
 config ICMP_MAX_TARGETS
-	int "Maximum number of ICMP targets allowed in the dispatch table"
+	int "Maximum number of ICMP targets allowed in the dispatch table."
+	depends on ICMP
+	default 5
+
+config ICMP_THREAD_STACK_SIZE
+	int "The size of the ICMP thread's stack."
+	depends on ICMP
+	default 1024
+
+config ICMP_THREAD_PRIORITY
+	int "The priority of the ICMP thread."
 	depends on ICMP
 	default 5
 
