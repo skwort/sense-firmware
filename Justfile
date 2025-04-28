@@ -69,12 +69,15 @@ test-lib:
     # Remove previous build and coverage artifacts
     [ -d "twister-out-lib" ] && rm -rf "twister-out-lib" || true
     [ -d "gcov_html" ] && rm -rf "gcov_html" || true
+    find . -name '*.gcda' -delete
+    find . -name '*.gcno' -delete
 
     # Run tests
     west twister -v \
+        --inline-logs \
         --integration \
         -T tests/lib/ \
-        -O twister-out-lib
+        -O twister-out-lib \
 
     # Fix clangd warnings
     find twister-out-lib/native_sim/ -type f -name compile_commands.json -exec sed -i 's/-fno-reorder-functions//g' {} +
@@ -86,6 +89,7 @@ test-lib:
         --root "$(pwd)" \
         --filter 'lib/' \
         --print-summary \
+        --gcov-delete \
         --html --html-details -o gcov_html/index.html
 
     xdg-open gcov_html/index.html
