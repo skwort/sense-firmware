@@ -61,6 +61,28 @@ config ICMP_MAX_INFLIGHT_MSGS_32
 
 endchoice # ICMP_MAX_INFLIGHT_MSGS
 
+config ICMP_MAX_INFLIGHT_MSG_AGE
+	int "Set the maximum age of all inflight messages in milliseconds."
+	depends on ICMP
+	default 1000
+	help
+	  Set the maximum age of all inflight messages in milliseconds. If an
+	  inflight message's age reaches this value before a response is
+	  received, the message will be dropped. The msg_id for this message
+	  will be invalidated and future message will be dropped. ICMP hosts
+	  are expected to reply within this time period. If no response is
+	  received, the command issuer should retry.
+
+config ICMP_INFLIGHT_TIMEOUT_CHECK_PERIOD
+	int "Set the frequency of timeout checking within ICMP."
+	depends on ICMP
+	default 300
+	help
+	  ICMP periodically checks for inflight message timeouts. This Kconfig
+	  determines the period of this check. The value should not be too
+	  small to avoid polluting the system workqueue and locking the
+	  inflight mutex.
+
 config ICMP_TESTING
 	bool "Enable special unit testing functions."
 	depends on ICMP

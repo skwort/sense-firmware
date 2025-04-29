@@ -16,18 +16,20 @@ K_MUTEX_DEFINE(icmp_inflight_mutex);
 
 #if CONFIG_ICMP_MAX_INFLIGHT_MSGS_8
 #define ICMP_MAX_INFLIGHT_MSGS 8
-static uint8_t inflight_bitmap;
+static volatile uint8_t inflight_bitmap;
 #elif CONFIG_ICMP_MAX_INFLIGHT_MSGS_16
 #define ICMP_MAX_INFLIGHT_MSGS 16
-static uint16_t inflight_bitmap;
+static volatile uint16_t inflight_bitmap;
 #elif CONFIG_ICMP_MAX_INFLIGHT_MSGS_32
 #define ICMP_MAX_INFLIGHT_MSGS 32
-static uint32_t inflight_bitmap;
+static volatile uint32_t inflight_bitmap;
 #else
 #error "Maximum number of ICMP inflight messages is undefined."
 #endif
 
 #define IS_BIT_SET(bitmap, bit_num)  ((bitmap) & (1U << (bit_num)))
+
+#define ICMP_SEND_PENDING 0
 
 struct icmp_inflight_table_entry {
     int64_t timestamp;
@@ -167,7 +169,7 @@ int icmp_command(uint8_t target_id,
     }
 
     inflight_bitmap |= (1 << msg_id);
-    icmp_inflight_table[msg_id].timestamp = 0;
+    icmp_inflight_table[msg_id].timestamp = ICMP_SEND_PENDING;
     icmp_inflight_table[msg_id].callback = cb;
     icmp_inflight_table[msg_id].user_data = user_data;
     k_mutex_unlock(&icmp_inflight_mutex);
@@ -320,6 +322,61 @@ static inline void update_inflight_timestamp(struct icmp_frame *frame)
     }
 }
 
+void icmp_inflight_timeout_handler(struct k_work *work)
+{
+    int ret = k_mutex_lock(&icmp_inflight_mutex, K_MSEC(20));
+    if (ret != 0) {
+        LOG_ERR("Failed to lock inflight mutex. Skipping timeout.");
+        return;
+    }
+
+    /* Return if there are no entries in the inflight table */
+    if (inflight_bitmap == 0) {
+        k_mutex_unlock(&icmp_inflight_mutex);
+        return;
+    }
+
+    /* Scan each of the entries and drop them if they have timed-out */
+    uint64_t uptime = k_uptime_get();
+    uint32_t bitmap = inflight_bitmap;
+    for (int bit = 0; bit < ICMP_MAX_INFLIGHT_MSGS; bit++) {
+        /* Skip empty entries */
+        if ((bitmap & 1) == 0) {
+            bitmap >>= 1;
+            continue;
+        }
+
+        /* Skip entries pending send */
+        if (icmp_inflight_table[bit].timestamp == ICMP_SEND_PENDING) {
+            bitmap >>= 1;
+            continue;
+        }
+
+        /* Check the timestamp and drop if too old */
+        if (uptime - icmp_inflight_table[bit].timestamp >
+                CONFIG_ICMP_MAX_INFLIGHT_MSG_AGE) {
+
+            inflight_bitmap &= ~(1 << bit);
+            icmp_inflight_table[bit].timestamp = 0;
+            icmp_inflight_table[bit].callback = NULL;
+            icmp_inflight_table[bit].user_data = NULL;
+        }
+
+        bitmap >>= 1;
+    }
+
+    k_mutex_unlock(&icmp_inflight_mutex);
+}
+
+K_WORK_DEFINE(icmp_inflight_timeout_work, icmp_inflight_timeout_handler);
+
+void icmp_inflight_timer_isr(struct k_timer *timer)
+{
+    k_work_submit(&icmp_inflight_timeout_work);
+}
+
+K_TIMER_DEFINE(icmp_inflight_timer, icmp_inflight_timer_isr, NULL);
+
 /**
  * @brief The ICMP thread function.
  *
@@ -338,6 +395,10 @@ void icmp_thread_function(void *p1, void *p2, void *p3)
         LOG_ERR("ICMP initialisation failed: %d", ret);
         return;
     }
+
+    k_timer_start(&icmp_inflight_timer,
+                  K_MSEC(CONFIG_ICMP_INFLIGHT_TIMEOUT_CHECK_PERIOD),
+                  K_MSEC(CONFIG_ICMP_INFLIGHT_TIMEOUT_CHECK_PERIOD));
 
     while (true) {
 
@@ -361,3 +422,4 @@ void icmp_thread_function(void *p1, void *p2, void *p3)
         k_sleep(K_MSEC(5));
     }
 }
+
