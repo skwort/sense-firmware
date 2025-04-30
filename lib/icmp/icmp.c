@@ -14,13 +14,13 @@ icmp_callback_t rx_dispatch_cb[CONFIG_ICMP_MAX_TARGETS] = {0};
  * bitmap and inflight table. */
 K_MUTEX_DEFINE(icmp_inflight_mutex);
 
-#if CONFIG_ICMP_MAX_INFLIGHT_MSGS_8
+#if defined(CONFIG_ICMP_MAX_INFLIGHT_MSGS_8)
 #define ICMP_MAX_INFLIGHT_MSGS 8
 static volatile uint8_t inflight_bitmap;
-#elif CONFIG_ICMP_MAX_INFLIGHT_MSGS_16
+#elif defined(CONFIG_ICMP_MAX_INFLIGHT_MSGS_16)
 #define ICMP_MAX_INFLIGHT_MSGS 16
 static volatile uint16_t inflight_bitmap;
-#elif CONFIG_ICMP_MAX_INFLIGHT_MSGS_32
+#elif defined(CONFIG_ICMP_MAX_INFLIGHT_MSGS_32)
 #define ICMP_MAX_INFLIGHT_MSGS 32
 static volatile uint32_t inflight_bitmap;
 #else
@@ -230,6 +230,7 @@ int icmp_notify(uint8_t target_id,
  * icmp_dispatch_handler function. This function uses the singleton
  * icmp_work_ctx variable to pass the callback and icmp_frame to the dispatch
  * handler. We use a semaphore to signal the availability of the singleton.
+ *
  * After executing the callback, the dispatch handler will free the icmp_frame.
  */
 
@@ -406,7 +407,10 @@ void icmp_thread_function(void *p1, void *p2, void *p3)
         ret = icmp_tx_dequeue(&tx_frame, K_NO_WAIT);
         if (ret == 0) {
             update_inflight_timestamp(tx_frame);
-            phy_api->send(tx_frame);
+            ret = phy_api->send(tx_frame);
+            if (ret != 0) {
+                LOG_ERR("PHY send failed: %d", ret);
+            }
             icmp_frame_free(tx_frame);
         }
 

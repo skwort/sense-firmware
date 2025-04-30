@@ -91,6 +91,15 @@ config ICMP_TESTING
 	  This Kconfig includes additonal functions for testing purposes in the
 	  build. This value must be disable for production builds.
 
+config ICMP_PHY_UART
+	bool "Enable the ICMP UART PHY"
+	default n
+	depends on ICMP
+	select SERIAL
+	select UART_ASYNC_API
+	help
+	  This option enables the ICMP UART PHY backend.
+
 module = ICMP
 module-str = ICMP
 source "subsys/logging/Kconfig.template.log_config"
