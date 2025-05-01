@@ -15,10 +15,10 @@ CompileFlags:
 ---
 
 If:
-  PathMatch: ^lib/.*
+  PathMatch: .*lib/icmp/.*
 
 CompileFlags:
-  CompilationDatabase: ./cores/control/build/control
+  CompilationDatabase: ./twister-out-lib/native_sim/icmp/unit/lib.icmp.unit
 
 ---
 
