@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
 #include <zephyr/drivers/sensor.h>
@@ -6,12 +7,20 @@
 #include <app_version.h>
 #include <zephyr/drivers/sensor/sht4x.h>
 
+#include <lib/icmp.h>
 #include <lib/heartbeat.h>
 #include "gnss.h"
 #include "sensors.h"
 #include "state.h"
 
 LOG_MODULE_REGISTER(main, CONFIG_APP_LOG_LEVEL);
+
+#ifdef CONFIG_ICMP
+void icmp_test_cb(const uint8_t *payload, size_t payload_len)
+{
+    LOG_INF("ICMP payload received: %s", payload);
+}
+#endif /* CONFIG_ICMP */
 
 int main(void)
 {
@@ -62,6 +71,14 @@ int main(void)
 
     state_unlock();
 
+#ifdef CONFIG_ICMP
+    icmp_register_target(0, icmp_test_cb);
+    icmp_init();
+
+    uint8_t payload[6] = {'n', 'r', 'f', '9', '1', '\0'};
+#endif /* CONFIG_ICMP */
+
+
     while (1) {
         state_lock(K_FOREVER);
 
@@ -75,7 +92,12 @@ int main(void)
 
         state_unlock();
 
-        k_sleep(K_MSEC(250));
+#ifdef CONFIG_ICMP
+        /* Send icmp notification */
+        icmp_notify(0, payload, 6);
+#endif /* CONFIG_ICMP */
+
+        k_sleep(K_MSEC(1000));
     }
 
     return 0;
