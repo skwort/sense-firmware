@@ -18,7 +18,7 @@ def run_test(fw_image, board, port, baud, serial_number, build_map,
     result_file = f"{summary_dir}/{image_name}.xml"
 
     cmd = [
-        "pytest", "-p", "no:cacheprovider", "tests/cores/control",
+        "pytest", "-p", "no:cacheprovider", "tests/cores/integration/",
         "--rootdir", ".",
         "--board", board,
         "--port", port,
