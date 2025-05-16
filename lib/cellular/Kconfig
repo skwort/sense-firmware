@@ -1,0 +1,87 @@
+config CELLULAR
+	bool "Enable the cellular interface"
+	select NETWORKING
+	select POSIX_API
+	select NET_DRIVERS
+	select NET_SOCKETS
+	select NET_SOCKETS_OFFLOAD
+	select NET_UDP
+	default n
+
+if CELLULAR
+
+config REMOTE_SERVER_HOSTNAME
+	string "Remote server hostname"
+
+config REMOTE_SERVER_PORT
+	int "Remote server port"
+
+config CELLULAR_CONN_TIMEOUT
+	int "The timeout period for the initial cellular connection in seconds"
+	depends on CELLULAR
+	default 120
+	help
+	  This value sets how long the celluar thread will wait for a valid
+	  cellular connection. If a connection is not made within the timeout
+	  period, then the thread will be terminated.
+
+config CELLULAR_UPLINK_BUFFER_SIZE
+	int "The size of uplink buffer used for transmission."
+	depends on CELLULAR
+	default 256
+	help
+	  This value sets an upper limit on the number able to be sent in a
+	  single transmission. This value should be tuned to the maximum
+	  cellular packet size to avoid packet fragmentation.
+
+config CELLULAR_DOWNLINK_BUFFER_SIZE
+	int "The size of downlink buffer used for reception."
+	depends on CELLULAR
+	default 256
+	help
+	  This value sets the maximum number of bytes returnable from the
+	  remote server socket. This value should be tuned to the maximum
+	  cellular packet size to avoid packet fragmentation.
+
+config CELLULAR_THREAD_STACK_SIZE
+	int "The size of the ICMP thread's stack."
+	depends on CELLULAR
+	default 1024
+
+config CELLULAR_THREAD_PRIORITY
+	int "The priority of the ICMP thread."
+	depends on CELLULAR
+	default 5
+
+config CELLULAR_UPLINK_QUEUE_MAX_ITEMS
+	int "Maximum number of packets allowed in the uplink queue"
+	depends on CELLULAR
+	default 8
+	help
+	  Calls to the cellular_packet_send function append the packets to
+	  an uplink queue. This option sets the maximum number if items in
+	  that queue. This number should be optimised to balance performance
+	  and memory overhead.
+
+choice CELLULAR_BACKEND
+	prompt "Select the cellular backend"
+	default CELLULAR_BACKEND_NONE
+
+config CELLULAR_BACKEND_NRF
+	bool "Use the nRF91 modem"
+	select NRF_MODEM_LIB
+	select LTE_LINK_CONTROL
+
+config CELLULAR_BACKEND_NONE
+	bool "Unspecified cellular backend"
+	help
+	  An unspecified cellular backend will cause build errors. This choice
+	  is included to simplify testing.
+
+endchoice # CELLULAR_BACKEND
+
+module = CELLULAR
+module-str = CELLULAR
+source "subsys/logging/Kconfig.template.log_config"
+
+endif # CELLULAR

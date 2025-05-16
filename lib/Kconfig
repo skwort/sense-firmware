@@ -9,3 +9,9 @@ menu "ICMP Library"
 rsource "icmp/Kconfig"
 
 endmenu
+
+menu "Cellular Library"
+
+rsource "cellular/Kconfig"
+
+endmenu

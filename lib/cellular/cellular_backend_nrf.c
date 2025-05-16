@@ -1,0 +1,55 @@
+#include <zephyr/kernel.h>
+#include <zephyr/logging/log.h>
+
+#include <modem/nrf_modem_lib.h>
+#include <modem/lte_lc.h>
+#include <nrf_errno.h>
+
+K_SEM_DEFINE(lte_connected_sem, 0, 1);
+
+static void lte_event_handler(const struct lte_lc_evt *const evt)
+{
+     switch (evt->type) {
+     case LTE_LC_EVT_NW_REG_STATUS:
+		LOG_INF("Network registration complete.");
+		k_sem_give(&lte_connected_sem);
+        break;
+	case LTE_LC_EVT_RRC_UPDATE:
+		LOG_INF("RRC mode: %s", evt->rrc_mode == LTE_LC_RRC_MODE_CONNECTED ?
+				"Connected" : "Idle");
+		break;
+     default:
+             break;
+     }
+}
+
+static int initialise_modem(void)
+{
+    int err;
+
+    err = nrf_modem_lib_init();
+    if (err == -NRF_EPERM) {
+        LOG_WRN("Modem already initialised.");
+    }  else if (err != 0) {
+        LOG_ERR("Failed to initialise modem library: %d", err);
+        return err;
+    }
+
+    lte_lc_register_handler(lte_event_handler);
+
+    err =  lte_lc_func_mode_set(LTE_LC_FUNC_MODE_ACTIVATE_LTE);
+    if (err != 0) {
+        LOG_INF("Failed to activate LTE in modem: %d", err);
+        return err;
+    }
+
+	err = k_sem_take(&lte_connected_sem, K_SEC(CONFIG_CELLULAR_CONN_TIMEOUT));
+    if (err != 0) {
+        LOG_INF("Failed to take LTE connection semaphore: %d", err);
+        return err;
+    }
+
+    LOG_INF("LTE connection established.");
+
+    return 0;
+}

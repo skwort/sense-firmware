@@ -1,0 +1,5 @@
+tests:
+  lib.cellular.integration:
+    platform_allow: native_sim
+    tags: cellular
+    timeout: 5
