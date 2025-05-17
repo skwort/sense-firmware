@@ -77,7 +77,7 @@ test-lib:
         --inline-logs \
         --integration \
         -T tests/lib/ \
-        -O twister-out-lib \
+        -O twister-out-lib
 
     # Fix clangd warnings
     find twister-out-lib/native_sim/ -type f -name compile_commands.json -exec sed -i 's/-fno-reorder-functions//g' {} +
@@ -88,6 +88,7 @@ test-lib:
     gcovr \
         --root "$(pwd)" \
         --filter 'lib/' \
+        --exclude-branches-by-pattern '.*LOG_(INF|DBG|WRN|ERR)\(' \
         --print-summary \
         --gcov-delete \
         --html --html-details -o gcov_html/index.html
