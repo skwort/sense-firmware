@@ -1,0 +1,5 @@
+tests:
+  lib.coap.unit:
+    platform_allow: native_sim
+    tags: coap
+    timeout: 5

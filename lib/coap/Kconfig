@@ -1,0 +1,17 @@
+config COAP_LIB
+	bool "Enable the CoAP Helper Library"
+	default n
+	select NETWORKING
+	select COAP
+
+if COAP_LIB
+
+config COAP_MAX_MSG_LEN
+	int "Maximum CoAP message length"
+	default 256
+
+module = COAP_LIB
+module-str = COAP_LIB
+source "subsys/logging/Kconfig.template.log_config"
+
+endif # COAP_LIB

@@ -15,3 +15,9 @@ menu "Cellular Library"
 rsource "cellular/Kconfig"
 
 endmenu
+
+menu "CoAP Helper Library"
+
+rsource "coap/Kconfig"
+
+endmenu

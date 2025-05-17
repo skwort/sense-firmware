@@ -1,3 +1,4 @@
 add_subdirectory_ifdef(CONFIG_HEARTBEAT heartbeat)
 add_subdirectory_ifdef(CONFIG_ICMP icmp)
 add_subdirectory_ifdef(CONFIG_CELLULAR cellular)
+add_subdirectory_ifdef(CONFIG_COAP_LIB coap)
