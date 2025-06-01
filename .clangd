@@ -23,6 +23,25 @@ CompileFlags:
 ---
 
 If:
+  PathMatch: .*lib/cellular/.*
+
+CompileFlags:
+  CompilationDatabase: ./cores/control/build/control
+
+---
+
+---
+
+If:
+  PathMatch: .*lib/coap/.*
+
+CompileFlags:
+  CompilationDatabase: ./twister-out-lib/native_sim/coap/unit/lib.coap.unit
+
+---
+
+
+If:
   PathMatch: ^boards/skwort/sense_core/.*
 
 CompileFlags:
