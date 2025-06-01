@@ -1,8 +1,11 @@
+#include <stdio.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/drivers/adc.h>
 
-LOG_MODULE_REGISTER(adcs, LOG_LEVEL_INF);
+#include <datapoint_helpers.h>
+
+LOG_MODULE_REGISTER(adcs, CONFIG_SENSE_CORE_SENSOR_ADCS_LOG_LEVEL);
 
 /* ADC nodes from devicetree. */
 #define ADC0_NODE DT_NODELABEL(ads1015_adc0)
@@ -26,7 +29,12 @@ const struct device *adc1 = DEVICE_DT_GET(ADC1_NODE);
 static struct k_work_delayable adcs_poll_work;
 static atomic_t poll_interval_ms = 500;
 
-void poll_ads1015(const struct device *adc)
+static const char *adc_label_table[2][4] = {
+    {"adc0_0", "adc0_1", "adc0_2", "adc0_3"},
+    {"adc1_0", "adc1_1", "adc1_2", "adc1_3"},
+};
+
+void poll_ads1015(const struct device *adc, int adc_num)
 {
     int err;
 	uint16_t channel_reading[CONFIG_SENSE_CORE_SENSOR_ADCS_SEQ_SAMPLES];
@@ -109,6 +117,7 @@ void poll_ads1015(const struct device *adc)
                                         adc_cfg.gain,
                                         ADC_SEQUENCE_RESOLUTION_SE,
                                         &val_mv[idx]);
+            submit_int_datapoint(val_mv[idx], adc_label_table[adc_num][chan], "mV");
             LOG_INF("  Sequence[%d]: %" PRIu32 " mv", idx, val_mv[idx]);
         }
     }
@@ -116,8 +125,8 @@ void poll_ads1015(const struct device *adc)
 
 void adcs_poll_work_handler(struct k_work *work)
 {
-    poll_ads1015(adc0);
-    poll_ads1015(adc1);
+    poll_ads1015(adc0, 0);
+    poll_ads1015(adc1, 1);
 
     k_work_schedule(&adcs_poll_work, K_MSEC(atomic_get(&poll_interval_ms)));
 }

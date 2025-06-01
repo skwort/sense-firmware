@@ -9,7 +9,7 @@ if SENSE_CORE_SENSOR_ADCS
 config SENSE_CORE_SENSOR_ADCS_SEQ_SAMPLES
 	int "Number of samples to collect in an ADC sampling sequence"
 	range 1 5
-	default 2
+	default 1
 
 endif
 
