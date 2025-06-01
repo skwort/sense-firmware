@@ -2,7 +2,8 @@ datapoint = {
   "i" => uint .size 3,            ; imei_tail (6 decimal digits fits in 3 bytes max)
   "t" => int .ge -9223372036854775808 .le 9223372036854775807,                    ; timestamp (Unix time)
   "s" => tstr .size (1..32),      ; sensor ID or name (reasonable limit)
+  ? "n" => int,                   ; optional int value
   ? "f" => float,                 ; optional float value
-  ? "r" => tstr .size (1..64),      ; optional string value
-  ? "u" => tstr .size (1..16)       ; optional units string
+  ? "r" => tstr .size (1..64),    ; optional string value
+  ? "u" => tstr .size (1..16)     ; optional units string
 }
