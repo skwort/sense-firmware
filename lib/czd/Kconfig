@@ -1,0 +1,16 @@
+config CZD
+	bool "Enable the CBOR-ZCBOR-Defintion Library"
+	default n
+	select ZCBOR
+	help
+	  This option enables the 'CZD' library.
+
+config CZD_DATAPOINT
+	bool "Enable the DATAPOINT subset of CZD"
+	depends on CZD
+	default n
+	select ZCBOR
+
+module = CZD
+module-str = CZD
+source "subsys/logging/Kconfig.template.log_config"

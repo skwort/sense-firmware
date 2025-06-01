@@ -10,6 +10,12 @@ rsource "icmp/Kconfig"
 
 endmenu
 
+menu "CZD Library"
+
+rsource "czd/Kconfig"
+
+endmenu
+
 menu "Cellular Library"
 
 rsource "cellular/Kconfig"
