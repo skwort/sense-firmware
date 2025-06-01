@@ -1,0 +1,5 @@
+add_subdirectory_ifdef(CONFIG_SENSE_CORE_SENSOR_GNSS gnss)
+add_subdirectory_ifdef(CONFIG_SENSE_CORE_SENSOR_IMU imu)
+add_subdirectory_ifdef(CONFIG_SENSE_CORE_SENSOR_TEMP_HUM temp_hum)
+
+target_sources(app PRIVATE sensors.c)

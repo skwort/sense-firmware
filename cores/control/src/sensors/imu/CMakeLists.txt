@@ -1,0 +1,3 @@
+target_sources_ifdef(CONFIG_SENSE_CORE_SENSOR_IMU app PRIVATE imu.c)
+target_sources_ifdef(CONFIG_SENSE_CORE_SENSOR_LIS3MDL app PRIVATE lis3mdl.c)
+target_sources_ifdef(CONFIG_SENSE_CORE_SENSOR_LSM6DSO app PRIVATE lsm6dso.c)

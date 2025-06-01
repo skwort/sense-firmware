@@ -1,0 +1,1 @@
+target_sources_ifdef(CONFIG_SENSE_CORE_SENSOR_SHT4X app PRIVATE sht4x.c)

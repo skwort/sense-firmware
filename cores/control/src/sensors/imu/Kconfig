@@ -1,0 +1,20 @@
+menuconfig SENSE_CORE_SENSOR_IMU
+    bool "SENSE Core inertial movement sensors"
+    default y
+
+if SENSE_CORE_SENSOR_IMU
+
+config SENSE_CORE_SENSOR_LSM6DSO
+    bool "LSM6DSO accelerometer"
+    default y
+
+config SENSE_CORE_SENSOR_LIS3MDL
+    bool "LIS3MDL magnetometer"
+    default y
+
+endif
+
+module = SENSE_CORE_SENSOR_IMU
+module-str = SENSE Core inertial movement sensors
+source "subsys/logging/Kconfig.template.log_config"
+

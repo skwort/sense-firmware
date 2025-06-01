@@ -1,41 +1,9 @@
-# Copyright (c) 2021 Nordic Semiconductor ASA
-# SPDX-License-Identifier: Apache-2.0
-#
-# This file is the application Kconfig entry point. All application Kconfig
-# options can be defined here or included via other application Kconfig files.
-# You can browse these options using the west targets menuconfig (terminal) or
-# guiconfig (GUI).
-
 menu "Zephyr"
 source "Kconfig.zephyr"
 endmenu
 
 menu "SENSE IoT Control Core"
 
-menu "Onboard Sensors"
-
-config APP_USE_SENSORS
-	bool "Enable sensors module"
-
-config APP_SENSOR_DEFAULT_POLL_FREQ
-	int "The default poll frequency for the onboard sensors in milliseconds"
-	default 1000
-
-config APP_USE_SHT40
-	bool "Enable the SHT40"
-	select APP_USE_SENSORS
-	default y
-
-config APP_USE_IMU
-	bool "Enable the LSM6DSO/LIS3MDL IMU"
-	select APP_USE_SENSORS
-	default y
-endmenu
-
-module = APP
-module-str = APP
-source "subsys/logging/Kconfig.template.log_config"
-
-rsource "Kconfig.gnss"
+rsource "src/sensors/Kconfig"
 
 endmenu

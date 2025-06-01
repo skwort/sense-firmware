@@ -7,3 +7,7 @@ project(cores-control LANGUAGES C)
 FILE(GLOB app_sources src/*.c)
 
 target_sources(app PRIVATE ${app_sources})
+
+add_subdirectory_ifdef(CONFIG_SENSE_CORE_SENSORS src/sensors)
+
+add_subdirectory(src/datapoint)

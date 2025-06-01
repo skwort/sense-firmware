@@ -1,0 +1,26 @@
+menuconfig SENSE_CORE_SENSOR_GNSS
+    bool "SENSE Core GNSS module"
+    default y
+
+if SENSE_CORE_SENSOR_GNSS
+
+config SENSE_CORE_GNSS_DEFAULT_FIX_INTERVAL
+	int "Fix interval for periodic fixes"
+	range 10 65535
+	default 120
+	help
+	  Fix interval (in seconds) for periodic fixes.
+
+config SENSE_CORE_GNSS_DEFAULT_PERIODIC_TIMEOUT
+	int "Fix timeout for periodic fixes"
+	range 0 65535
+	default 60
+	help
+	  Fix timeout (in seconds) for periodic fixes.
+	  If set to zero, GNSS is allowed to run indefinitely until a valid PVT estimate is produced.
+
+endif
+
+module = SENSE_CORE_SENSOR_GNSS
+module-str = SENSE Core GNSS module
+source "subsys/logging/Kconfig.template.log_config"

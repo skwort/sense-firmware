@@ -4,11 +4,9 @@
 #include <modem/lte_lc.h>
 #include <modem/nrf_modem_lib.h>
 
-#include "state.h"
+#include <datapoint_helpers.h>
 
-#ifdef CONFIG_APP_USE_GNSS
-
-LOG_MODULE_REGISTER(gnss, CONFIG_APP_GNSS_LOG_LEVEL);
+LOG_MODULE_REGISTER(gnss, CONFIG_SENSE_CORE_SENSOR_GNSS_LOG_LEVEL);
 
 static struct nrf_modem_gnss_pvt_data_frame last_pvt;
 
@@ -20,6 +18,12 @@ static volatile uint8_t gnss_internal_state = GNSS_STATE_SEARCH;
 
 /* Use a semaphore to signal GNSS data availability */
 static K_SEM_DEFINE(pvt_data_sem, 0, 1);
+
+static struct k_work_delayable gnss_poll_work;
+static atomic_t poll_interval_ms = 500;
+
+uint16_t gnss_fix_retry_period;
+uint16_t gnss_fix_interval;
 
 static void gnss_event_handler(int event)
 {
@@ -62,7 +66,7 @@ static void gnss_event_handler(int event)
     }
 }
 
-static int gnss_init_and_start(struct state *state)
+static int gnss_init_and_start(void)
 {
     if (lte_lc_func_mode_set(LTE_LC_FUNC_MODE_ACTIVATE_GNSS) != 0) {
         LOG_ERR("Failed to activate GNSS functional mode");
@@ -81,14 +85,14 @@ static int gnss_init_and_start(struct state *state)
         LOG_WRN("Failed to set GNSS use case");
     }
 
-    state->gnss_fix_retry_period = CONFIG_APP_GNSS_DEFAULT_PERIODIC_TIMEOUT;
-    state->gnss_fix_interval = CONFIG_APP_GNSS_DEFAULT_FIX_INTERVAL;
+    gnss_fix_retry_period = CONFIG_SENSE_CORE_GNSS_DEFAULT_PERIODIC_TIMEOUT;
+    gnss_fix_interval = CONFIG_SENSE_CORE_GNSS_DEFAULT_FIX_INTERVAL;
 
     /* Give the GNSS receiver fix_retry seconds to find a fix.
      * NOTE: Until the modem finds its first fix, the fix_retry period will
      * remain 60 seconds. If the value is set to 0, then it will search
      * indefinitely*/
-    if (nrf_modem_gnss_fix_retry_set(state->gnss_fix_retry_period) != 0) {
+    if (nrf_modem_gnss_fix_retry_set(gnss_fix_retry_period) != 0) {
         LOG_ERR("Failed to set GNSS fix retry");
         return -1;
     }
@@ -99,12 +103,10 @@ static int gnss_init_and_start(struct state *state)
      *     next_wake_time = current_time + (fix_interval - fix_retry)
      * Otherwise, the modem appears to respect the fix interval, with some
      * understandable RTC skew */
-    if (nrf_modem_gnss_fix_interval_set(state->gnss_fix_interval) != 0) {
+    if (nrf_modem_gnss_fix_interval_set(gnss_fix_interval) != 0) {
         LOG_ERR("Failed to set GNSS fix interval");
         return -1;
     }
-
-    state->gnss_last_update_time = 0;
 
     if (nrf_modem_gnss_start() != 0) {
         LOG_ERR("Failed to start GNSS");
@@ -137,21 +139,14 @@ static void log_satellite_stats(struct nrf_modem_gnss_pvt_data_frame *pvt_data)
             tracked, in_fix, unhealthy);
 }
 
-static void process_fix_data(struct nrf_modem_gnss_pvt_data_frame *pvt_data,
-                             struct state *s)
+static void process_fix_data(struct nrf_modem_gnss_pvt_data_frame *pvt_data)
 {
     /* Push PVT data to system state struct */
-    s->gnss_latitude = pvt_data->latitude;
-    s->gnss_longitude = pvt_data->longitude;
-    s->gnss_accuracy = pvt_data->accuracy;
-    s->gnss_altitude = pvt_data->altitude;
-    s->gnss_altitude_accuracy = pvt_data->altitude_accuracy;
-    s->gnss_speed = pvt_data->speed;
-    s->gnss_speed_accuracy = pvt_data->speed_accuracy;
-    s->gnss_vertical_speed = pvt_data->vertical_speed;
-    s->gnss_vertical_speed_accuracy = pvt_data->vertical_speed_accuracy;
-    s->gnss_heading = pvt_data->heading;
-    s->gnss_heading_accuracy = pvt_data->heading_accuracy;
+    submit_float_datapoint(pvt_data->latitude, "gnss_lat", "deg");
+    submit_float_datapoint(pvt_data->longitude, "gnss_long", "deg");
+    submit_float_datapoint((double)pvt_data->accuracy, "gnss_accuracy", "m");
+    submit_float_datapoint((double)pvt_data->altitude, "gnss_alt", "m");
+    submit_float_datapoint((double)pvt_data->altitude_accuracy, "gnss_alt_accuracy", "m");
 
     LOG_INF("Latitude           %.06f", pvt_data->latitude);
     LOG_INF("Longitude:         %.06f", pvt_data->longitude);
@@ -175,38 +170,18 @@ static void process_fix_data(struct nrf_modem_gnss_pvt_data_frame *pvt_data,
            pvt_data->datetime.ms);
 }
 
-int gnss_init(struct state *state)
+void gnss_poll_work_handler(struct k_work *work)
 {
-    int err;
-
-    LOG_INF("Initialsing GNSS");
-
-    err = nrf_modem_lib_init();
-    if (err) {
-        LOG_ERR("Modem library initialisation failed, error: %d", err);
-        return err;
+    if (gnss_internal_state == GNSS_STATE_SLEEP) {
+        goto reschedule;
     }
-
-    if (gnss_init_and_start(state) != 0) {
-        LOG_ERR("Failed to initialise and start GNSS");
-        return -1;
-    }
-
-    return 0;
-}
-
-void poll_gnss(struct state *state)
-{
-    if (gnss_internal_state == GNSS_STATE_SLEEP)
-        return;
 
     while (k_sem_take(&pvt_data_sem, K_NO_WAIT) == 0) {
         log_satellite_stats(&last_pvt);
 
         if (last_pvt.flags & NRF_MODEM_GNSS_PVT_FLAG_FIX_VALID) {
             LOG_INF("Updating GNSS data.");
-            process_fix_data(&last_pvt, state);
-            state->gnss_last_update_time = k_uptime_get();
+            process_fix_data(&last_pvt);
         } else if (last_pvt.flags & NRF_MODEM_GNSS_PVT_FLAG_SCHED_DOWNLOAD) {
             LOG_INF("GNSS scheduled download in progress.");
         } else if (last_pvt.flags & NRF_MODEM_GNSS_PVT_FLAG_DEADLINE_MISSED) {
@@ -217,6 +192,38 @@ void poll_gnss(struct state *state)
             LOG_INF("GNSS attempting to acquire fix...");
         }
     }
+
+reschedule:
+    k_work_reschedule(&gnss_poll_work, K_MSEC(poll_interval_ms));
 }
 
-#endif /* CONFIG_APP_USE_GNSS */
+int gnss_init(void)
+{
+    int err = 0;
+
+    LOG_INF("Initialsing GNSS");
+
+    err = nrf_modem_lib_init();
+    if (err == -1) {
+        LOG_WRN("Modem already initialised.");
+    }  else if (err != 0) {
+        LOG_ERR("Failed to initialise modem library: %d", err);
+        return err;
+    }
+
+    if (gnss_init_and_start() != 0) {
+        LOG_ERR("Failed to initialise and start GNSS");
+        return -1;
+    }
+
+    k_work_init_delayable(&gnss_poll_work, gnss_poll_work_handler);
+    k_work_schedule(&gnss_poll_work, K_NO_WAIT);
+
+    return 0;
+}
+
+void gnss_set_poll_interval(int32_t interval_ms)
+{
+    atomic_set(&poll_interval_ms, interval_ms);
+    k_work_reschedule(&gnss_poll_work, K_MSEC(interval_ms));
+}

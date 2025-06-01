@@ -1,0 +1,16 @@
+menuconfig SENSE_CORE_SENSOR_TEMP_HUM
+    bool "Temperature and humidity sensors"
+    default y
+
+if SENSE_CORE_SENSOR_TEMP_HUM
+
+config SENSE_CORE_SENSOR_SHT4X
+    bool "SHT4x temperature and humidity Sensor"
+    default y
+
+endif
+
+module = SENSE_CORE_SENSOR_TEMP_HUM
+module-str = SENSE Core temperature and humidity sensors
+source "subsys/logging/Kconfig.template.log_config"
+
