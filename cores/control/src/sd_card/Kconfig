@@ -1,0 +1,11 @@
+menuconfig SD_CARD_WRITER
+	bool "SD Card Writer module"
+	select DISK_ACCESS
+	select DISK_DRIVER_SDMMC
+	select FILE_SYSTEM
+	select FAT_FILESYSTEM_ELM
+	default y
+
+module = SD_CARD_WRITER
+module-str = SENSE Core SD card writer module
+source "subsys/logging/Kconfig.template.log_config"

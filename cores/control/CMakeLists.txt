@@ -11,3 +11,4 @@ target_sources(app PRIVATE ${app_sources})
 add_subdirectory_ifdef(CONFIG_SENSE_CORE_SENSORS src/sensors)
 
 add_subdirectory(src/datapoint)
+add_subdirectory(src/sd_card)

@@ -5,5 +5,6 @@ endmenu
 menu "SENSE IoT Control Core"
 
 rsource "src/sensors/Kconfig"
+rsource "src/sd_card/Kconfig"
 
 endmenu
