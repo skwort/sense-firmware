@@ -11,6 +11,8 @@
 #include <lib/heartbeat.h>
 #include <lib/cellular.h>
 
+#include <sd_card.h>
+
 #include "state.h"
 
 #ifdef CONFIG_SENSE_CORE_SENSORS
@@ -50,6 +52,10 @@ int main(void)
 #endif /* CONFIG_HEARTBEAT */
 
     state_unlock();
+
+#ifdef CONFIG_SD_CARD_WRITER
+    sd_writer_init();
+#endif /* CONFIG_SD_CARD_WRITER */
 
 #ifdef CONFIG_SENSE_CORE_SENSORS
     sensors_init();
