@@ -4,6 +4,7 @@ config SENSE_CORE_SENSORS
     bool "Enable sensor support"
     default y
 
+rsource "adc/Kconfig"
 rsource "gnss/Kconfig"
 rsource "imu/Kconfig"
 rsource "temp_hum/Kconfig"

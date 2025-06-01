@@ -1,0 +1,19 @@
+menuconfig SENSE_CORE_SENSOR_ADCS
+	bool "SENSE Core external ADS1015 ADCs"
+	select ADC
+	default y
+
+
+if SENSE_CORE_SENSOR_ADCS
+
+config SENSE_CORE_SENSOR_ADCS_SEQ_SAMPLES
+	int "Number of samples to collect in an ADC sampling sequence"
+	range 1 5
+	default 2
+
+endif
+
+module = SENSE_CORE_SENSOR_ADCS
+module-str = SENSE Core external ADCs
+source "subsys/logging/Kconfig.template.log_config"
+

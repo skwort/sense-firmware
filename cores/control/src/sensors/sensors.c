@@ -1,8 +1,12 @@
 #include "sensors.h"
 
+#ifdef CONFIG_SENSE_CORE_SENSOR_ADCS
+#include "adc/adcs.h"
+#endif /* CONFIG_SENSE_CORE_SENSOR_ADCS */
+
 #ifdef CONFIG_SENSE_CORE_SENSOR_GNSS
 #include "gnss/gnss.h"
-#endif /* CONFIG_SENSE_CORE_SENSOR_GNSS*/
+#endif /* CONFIG_SENSE_CORE_SENSOR_GNSS */
 
 #ifdef CONFIG_SENSE_CORE_SENSOR_IMU
 #include "imu/imu.h"
@@ -10,7 +14,8 @@
 
 #ifdef CONFIG_SENSE_CORE_SENSOR_TEMP_HUM
 #include "temp_hum/temp_hum.h"
-#endif /* CONFIG_SENSE_CORE_SENSOR_TEMP_HUM*/
+#endif /* CONFIG_SENSE_CORE_SENSOR_TEMP_HUM */
+
 
 
 void sensors_init(void)
@@ -30,4 +35,8 @@ void sensors_init(void)
 #ifdef CONFIG_SENSE_CORE_SENSOR_SHT4X
     sht4x_init();
 #endif /* CONFIG_SENSE_CORE_SENSOR_SHT4X */
+
+#ifdef CONFIG_SENSE_CORE_SENSOR_ADCS
+    adcs_init();
+#endif /* CONFIG_SENSE_CORE_SENSOR_ADCS*/
 }
