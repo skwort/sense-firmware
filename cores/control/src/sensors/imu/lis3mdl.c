@@ -14,7 +14,7 @@ LOG_MODULE_DECLARE(imu);
 const struct device *const lis3mdl = DEVICE_DT_GET_ANY(st_lis3mdl_magn);
 
 static struct k_work_delayable lis3mdl_poll_work;
-static atomic_t poll_interval_ms = 500;
+static atomic_t poll_interval_ms = 3000;
 
 void lis3mdl_poll_work_handler(struct k_work *work)
 {

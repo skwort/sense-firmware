@@ -15,7 +15,7 @@ LOG_MODULE_REGISTER(temp_hum, CONFIG_SENSE_CORE_SENSOR_TEMP_HUM_LOG_LEVEL);
 const struct device *const sht4x = DEVICE_DT_GET_ANY(sensirion_sht4x);
 
 static struct k_work_delayable sht4x_poll_work;
-static atomic_t poll_interval_ms = 500;
+static atomic_t poll_interval_ms = 5000;
 
 
 void sht4x_poll_work_handler(struct k_work *work)

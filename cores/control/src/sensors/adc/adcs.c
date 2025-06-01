@@ -27,7 +27,7 @@ const struct device *adc0 = DEVICE_DT_GET(ADC0_NODE);
 const struct device *adc1 = DEVICE_DT_GET(ADC1_NODE);
 
 static struct k_work_delayable adcs_poll_work;
-static atomic_t poll_interval_ms = 500;
+static atomic_t poll_interval_ms = 3000;
 
 static const char *adc_label_table[2][4] = {
     {"adc0_0", "adc0_1", "adc0_2", "adc0_3"},

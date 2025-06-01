@@ -13,7 +13,7 @@ LOG_MODULE_DECLARE(imu);
 const struct device *const lsm6dso = DEVICE_DT_GET_ANY(st_lsm6dso);
 
 static struct k_work_delayable lsm6dso_poll_work;
-static atomic_t poll_interval_ms = 500;
+static atomic_t poll_interval_ms = 3000;
 
 int lsm6dso_set_sampling_frequency(double freq)
 {
