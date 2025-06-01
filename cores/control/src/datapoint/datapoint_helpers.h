@@ -13,4 +13,8 @@ int submit_float_datapoint(double value,
                            const char *label,
                            const char *unit);
 
+int submit_int_datapoint(int value,
+                         const char *label,
+                         const char *unit);
+
 #endif /* DATAPOINT_HELPERS_H_ */

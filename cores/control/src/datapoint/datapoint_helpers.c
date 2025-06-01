@@ -17,6 +17,7 @@ int get_and_submit_sensor_datapoint(const struct device *dev,
     }
 
     struct datapoint dp = {
+        .n_present = false,
         .f_present = true,
         .r_present = false,
         .u_present = true,
@@ -33,12 +34,30 @@ int submit_float_datapoint(double value,
                            const char *unit)
 {
     struct datapoint dp = {
+        .n_present = false,
         .f_present = true,
         .r_present = false,
         .u_present = true,
         .s = {.value = label, .len = strlen(label)},
         .u.u = {.value = unit, .len = strlen(unit)},
         .f.f = value,
+    };
+
+    return datapoint_enqueue(&dp,K_NO_WAIT);
+}
+
+int submit_int_datapoint(int32_t value,
+                         const char *label,
+                         const char *unit)
+{
+    struct datapoint dp = {
+        .n_present = true,
+        .f_present = false,
+        .r_present = false,
+        .u_present = true,
+        .s = {.value = label, .len = strlen(label)},
+        .u.u = {.value = unit, .len = strlen(unit)},
+        .n.n = value,
     };
 
     return datapoint_enqueue(&dp,K_NO_WAIT);
