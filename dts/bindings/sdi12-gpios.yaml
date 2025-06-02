@@ -1,0 +1,23 @@
+description: GPIOs used for the custom SDI-12 circuit
+
+compatible: "sdi12-gpios"
+
+properties:
+  not-space-gpio:
+    type: phandle-array
+    required: true
+    specifier-space: gpio
+    description: |
+      The GPIO connected to the ~SPACE pin.
+  tx-en-gpio:
+    type: phandle-array
+    required: true
+    specifier-space: gpio
+    description: |
+      The GPIO connected to the TX_EN pin.
+  rx-en-gpio:
+    type: phandle-array
+    required: true
+    specifier-space: gpio
+    description: |
+      The GPIO connected to the RX_EN pin.

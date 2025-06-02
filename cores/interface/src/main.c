@@ -6,7 +6,7 @@
 #include <lib/icmp.h>
 #include <lib/heartbeat.h>
 
-LOG_MODULE_REGISTER(main);
+LOG_MODULE_REGISTER(main, LOG_LEVEL_ERR);
 
 #ifdef CONFIG_ICMP
 void icmp_test_cb(const uint8_t *payload, size_t payload_len)

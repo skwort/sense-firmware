@@ -27,6 +27,18 @@
 	// 	};
 	// };
 
+	sdi12_gpios: sdi12-gpios {
+		compatible = "sdi12-gpios";
+		not-space-gpio = <&gpio0 15 GPIO_ACTIVE_LOW>;   // ~SPACE
+		tx-en-gpio = <&gpio0 14 GPIO_ACTIVE_HIGH>;      // TX_EN
+		rx-en-gpio = <&gpio0 17 GPIO_ACTIVE_HIGH>;      // RX_EN
+	};
+
+	ls_12v: load_switch_12v {
+		compatible = "load-switch";
+		gpios = <&gpio0 28 GPIO_ACTIVE_HIGH>;
+
+	};
 };
 
 &vregmain {
@@ -71,7 +83,10 @@ rs485_uart: &uart1 {
 
 sdi12_uart: &uart2 {
 	status = "okay";
-	current-speed = <115200>;
+	current-speed = <1200>;
+	parity = "even";
+	stop-bits = "1";
+	data-bits = <7>;
 	pinctrl-0 = <&uart2_default>;
 	pinctrl-1 = <&uart2_sleep>;
 	pinctrl-names = "default", "sleep";
