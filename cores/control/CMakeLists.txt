@@ -12,4 +12,4 @@ add_subdirectory_ifdef(CONFIG_SENSE_CORE_SENSORS src/sensors)
 
 add_subdirectory(src/datapoint)
 add_subdirectory(src/sd_card)
-add_subdirectory_ifdef(CONFIG_LOG_BACKEND_ICMP src/log)
+add_subdirectory(src/remote_commands)

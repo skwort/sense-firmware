@@ -19,6 +19,8 @@
 #include "sensors/sensors.h"
 #endif /* CONFIG_SENSE_CORE_SENSORS */
 
+#include <remote_commands.h>
+
 LOG_MODULE_REGISTER(main, LOG_LEVEL_ERR);
 
 #ifdef CONFIG_ICMP
@@ -27,11 +29,6 @@ void icmp_test_cb(const uint8_t *payload, size_t payload_len)
     LOG_INF("ICMP payload received: %s", payload);
 }
 #endif /* CONFIG_ICMP */
-
-void cellular_recv_cb(const uint8_t *payload, size_t payload_len)
-{
-    LOG_INF("Payload recvd: %d", payload_len);
-}
 
 int main(void)
 {
@@ -62,10 +59,12 @@ int main(void)
 #endif
 
 #ifdef CONFIG_CELLULAR
-    if (cellular_init(cellular_recv_cb) != 0) {
+    if (cellular_init(remote_commands_handle_packet) != 0) {
         LOG_ERR("Cellular init failed");
     }
 #endif
+
+    remote_commands_init();
 
 #ifdef CONFIG_ICMP
     icmp_register_target(0, icmp_test_cb);
