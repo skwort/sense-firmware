@@ -1,0 +1,6 @@
+command = {
+  "ty" => uint,    ; command type
+  "ta" => uint,    ; command target
+  ? "i" => int,    ; integer value if applicable
+  ? "b" => bool    ; boolean value if applicable
+}

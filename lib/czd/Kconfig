@@ -11,6 +11,12 @@ config CZD_DATAPOINT
 	default n
 	select ZCBOR
 
+config CZD_COMMAND
+	bool "Enable the COMMAND subset of CZD"
+	depends on CZD
+	default n
+	select ZCBOR
+
 module = CZD
 module-str = CZD
 source "subsys/logging/Kconfig.template.log_config"
